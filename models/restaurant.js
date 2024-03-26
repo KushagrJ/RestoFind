@@ -22,6 +22,6 @@ const RestaurantSchema = new Schema({
 // in a relational database.
 // In this case, the name of the corresponding MongoDB collection will be
 // restaurants (i.e. the plural, lowercased version of Restaurant).
-// An instance of a Mongoose model is called a Mongoose document, which maps to
-// a MongoDB document.
+// An instance of a Mongoose model is called a Mongoose document (which is an
+// object) which maps to a MongoDB document.
 module.exports = mongoose.model("Restaurant", RestaurantSchema);

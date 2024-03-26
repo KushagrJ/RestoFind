@@ -9,11 +9,15 @@
  * Mongoose.js is an Object-Document Mapper library which allows you to interact
    with MongoDB (which is a document database) using JavaScript objects.
 
+ * Middleware in Express are functions that come into play after the server
+   receives the request and before the response is sent to the client.
+ * They are arranged in a chain and are called in sequence.
+
  * From within a folder, use npm init to create a package.json file for the
    corresponding Node.js web application.
  * npm init -y will create the package.json file using the default settings.
 
- * Use sudo npm i express mongoose ejs to install express, mongoose and ejs for
+ * Use sudo npm i express mongoose ejs to install Express, Mongoose and EJS for
    the corresponding Node.js project.
 
  * Use node app.js or nodemon app.js to start the express server.
@@ -24,7 +28,7 @@
    browser to see the first page hosted from the corresponding web application.
 
  * Use sudo brew services start mongodb-community@<version no. (for eg.. 6.0)>
-   to start the mongodbservice.
+   to start the MongoDB service.
  * To access the MongoDB shell, use mongosh (instead of mongo).
 
  */
