@@ -25,5 +25,6 @@
 
  * Use sudo brew services start mongodb-community@<version no. (for eg.. 6.0)>
    to start the mongodbservice.
+ * To access the MongoDB shell, use mongosh (instead of mongo).
 
  */

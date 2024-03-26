@@ -12,7 +12,10 @@ const path = require("path");
 // This imports the mongoose module.
 const mongoose = require("mongoose");
 
-// This connects mongoose to the MongoDB database called resto-find.
+// This imports the model exported in the file restaurant.js.
+const Restaurant = require("./models/restaurant")
+
+// This connects Mongoose to the MongoDB database called resto-find.
 mongoose.connect("mongodb://127.0.0.1:27017/resto-find");
 
 // Instead of using mongoose.connection, you can now use db.
@@ -26,12 +29,12 @@ db.once("open", () => {
 })
 
 // This allows you to render HTML pages (using ejs templates) as HTTP responses.
-// Also, this causes express to load the ejs module internally, and you can omit
-// the extension (for eg., home instead of home.ejs).
+// Also, this causes express to import the ejs module internally, and you can
+// omit the extension (for eg., home instead of home.ejs).
 app.set("view engine", "ejs");
 
-// This tells express that the view (template) files are located in the views
-// directory within RestoFind.
+// This tells express that the view (ejs template) files are located in the
+// views directory within RestoFind.
 app.set("views", path.join(__dirname, "views"));
 
 // This invokes the specified callback function whenever there is an HTTP GET
@@ -49,6 +52,20 @@ app.get("/", (req, res) => {
     // HTTP response.
     res.render("home");
 });
+
+// app.get("/makerestaurant", async (req, res) => {
+//     // This creates a new Mongoose document.
+//     const restaurant = new Restaurant({
+//         title: "Bobby Snacks",
+//         description: "Best Paneer Chilli in Asansol"
+//     });
+
+//     // This saves the specified Mongoose document to MongoDB as a MongoDB
+//     // document within the restaurants MongoDB collection.
+//     await restaurant.save();
+
+//     res.send(restaurant);
+// });
 
 // This starts up the server on port 3000 and invokes the specified callback
 // function.
