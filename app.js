@@ -12,6 +12,9 @@ const path = require("path");
 // This imports the Mongoose module.
 const mongoose = require("mongoose");
 
+// This imports the method-override module.
+const method_override = require("method-override");
+
 // This imports the model exported in the restaurant.js file.
 const Restaurant = require("./models/restaurant");
 
@@ -40,8 +43,13 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // express.urlencoded() is a built-in middleware which populates the req.body
-// object according to the incoming post/put/etc. request's data.
+// object according to the incoming POST/PUT/etc. request's data.
 app.use(express.urlencoded({ extended: true }));
+
+// method override is a middleware which lets you use HTTP verbs such as PUT or
+// DELETE in places where the client doesn't support it.
+// For eg., you can only send a GET request or a POST request via an HTML form.
+app.use(method_override("_method"));
 
 // This invokes the specified callback function whenever there is an HTTP GET
 // request with a path "/" relative to the website's root.
@@ -99,6 +107,23 @@ app.get("/restaurants/:id", async (req, res) => {
     const restaurant = await Restaurant.findById(req.params.id);
 
     res.render("restaurants/show", { restaurant });
+});
+
+app.get("/restaurants/:id/edit", async (req, res) => {
+    const restaurant = await Restaurant.findById(req.params.id);
+    res.render("restaurants/edit", { restaurant });
+});
+
+app.put("/restaurants/:id", async (req, res) => {
+    const restaurant = await
+        Restaurant.findByIdAndUpdate(req.params.id, req.body.restaurant);
+
+    res.redirect(`/restaurants/${restaurant._id}`);
+});
+
+app.delete("/restaurants/:id", async (req, res) => {
+    await Restaurant.findByIdAndDelete(req.params.id);
+    res.redirect("/restaurants");
 });
 
 // This starts up the server on port 3000 and invokes the specified callback
