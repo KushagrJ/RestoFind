@@ -5,18 +5,32 @@
 
 <% layout("layouts/boilerplate") %>
 
-<h1><%= restaurant.title %></h1>
-<h2><%= restaurant.location %></h2>
-<img src="<%= restaurant.image %>" alt="">
-<p><%= restaurant.description %></p>
-<p><a href="/restaurants/<%= restaurant._id %>/edit">Edit</a></p>
+<div class="row">
+    <div class="col-6 offset-3">
+        <div class="card mb-3">
+            <img class="card-img-top" src="<%= restaurant.image %>" alt="Card image cap">
 
-<p>
-<form action="/restaurants/<%= restaurant._id %>?_method=DELETE" method="POST">
-    <button>Delete</button>
-</form>
-</p>
+            <div class="card-body">
+                <h5 class="card-title"><%= restaurant.title %></h5>
+                <p class="card-text"><%= restaurant.description %></p>
+            </div>
 
-<footer>
-    <a href="/restaurants">All Restaurants</a>
-</footer>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-muted"><%= restaurant.location %></li>
+                <li class="list-group-item">Rs. <%= restaurant.price %> Per Person</li>
+            </ul>
+
+            <div class="card-body">
+                <a class="card-link btn btn-info" href="/restaurants/<%= restaurant._id %>/edit">Edit</a>
+
+                <form class="d-inline" action="/restaurants/<%= restaurant._id %>?_method=DELETE" method="POST">
+                    <button class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+
+            <div class="card-footer text-muted">
+                2 days ago
+            </div>
+        </div>
+    </div>
+</div>
