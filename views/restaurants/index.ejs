@@ -1,28 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
+<!--
+    layout("layouts/boilerplate") (via ejs-mate) causes the contents of this
+    file to be passed to the views/layouts/boilerplate.ejs file as the local
+    variable called body.
+    The final page to be rendered is made up of the contents of the boilerplate
+    file after the above substitution has been performed.
+-->
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurants</title>
-</head>
+<% layout("layouts/boilerplate") %>
 
-<body>
-    <h1>All Restaurants</h1>
+<h1>All Restaurants</h1>
 
-    <div>
-        <a href="/restaurants/new">Add Restaurant</a>
+<div>
+    <a href="/restaurants/new">Add Restaurant</a>
+</div>
+
+<% for (let restaurant of restaurants) { %>
+<div class="card mb-3">
+    <div class="row">
+        <div class="col-md-4">
+            <img class="img-fluid" src="<%= restaurant.image %>" alt="">
+        </div>
+
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title"><%= restaurant.title %></h5>
+                <p class="card-text"><%= restaurant.description %></p>
+
+                <p class="card-text">
+                    <small class="text-muted"><%= restaurant.location %></small>
+                </p>
+
+                <a class="btn btn-primary" href="/restaurants/<%= restaurant._id %>">View <%= restaurant.title %></a>
+            </div>
+        </div>
     </div>
-
-    <ul>
-        <% for (let restaurant of restaurants) { %>
-        <li>
-            <a href="/restaurants/<%= restaurant._id %>">
-                <%= restaurant.title %>
-            </a>
-        </li>
-        <% } %>
-    </ul>
-</body>
-
-</html>
+</div>
+<% } %>

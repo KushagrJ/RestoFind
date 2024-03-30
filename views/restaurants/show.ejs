@@ -1,33 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
+<!--
+    _method=DELETE tells Express (via method-override) to treat this as a DELETE
+    request, instead of a POST request.
+-->
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Show</title>
-</head>
+<% layout("layouts/boilerplate") %>
 
-<body>
-    <h1><%= restaurant.title %></h1>
-    <h2><%= restaurant.location %></h2>
+<h1><%= restaurant.title %></h1>
+<h2><%= restaurant.location %></h2>
+<img src="<%= restaurant.image %>" alt="">
+<p><%= restaurant.description %></p>
+<p><a href="/restaurants/<%= restaurant._id %>/edit">Edit</a></p>
 
-    <footer>
-        <div>
-            <a href="/restaurants/<%= restaurant._id %>/edit">Edit</a>
-        </div>
+<p>
+<form action="/restaurants/<%= restaurant._id %>?_method=DELETE" method="POST">
+    <button>Delete</button>
+</form>
+</p>
 
-        <!-- _method=DELETE tells Express (via method override) to treat     -->
-        <!-- this as a DELETE request, instead of a POST request.            -->
-        <div>
-            <form action="/restaurants/<%= restaurant._id %>?_method=DELETE" method="POST">
-                <button>Delete</button>
-            </form>
-        </div>
-
-        <div>
-            <a href="/restaurants">All Restaurants</a>
-        </div>
-    </footer>
-</body>
-
-</html>
+<footer>
+    <a href="/restaurants">All Restaurants</a>
+</footer>

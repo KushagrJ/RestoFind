@@ -6,7 +6,8 @@ const Schema = mongoose.Schema;
 // This creates a Mongoose schema.
 const RestaurantSchema = new Schema({
     title: String,
-    price: String,
+    image: String,
+    price: Number,
     description: String,
     location: String
 });

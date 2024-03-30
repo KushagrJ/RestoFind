@@ -15,6 +15,9 @@ const mongoose = require("mongoose");
 // This imports the method-override module.
 const method_override = require("method-override");
 
+// This imports the ejs-mate module.
+const ejs_mate = require("ejs-mate");
+
 // This imports the model exported in the restaurant.js file.
 const Restaurant = require("./models/restaurant");
 
@@ -41,6 +44,11 @@ app.set("view engine", "ejs");
 // This tells express that the view (ejs template) files are located in the
 // views directory within RestoFind.
 app.set("views", path.join(__dirname, "views"));
+
+// ejs-mate allows you to reuse the same ejs partial template across multiple
+// views. This is similar to ejs partials, and both (ejs-mate and ejs partials)
+// can be used simultaneously.
+app.engine("ejs", ejs_mate);
 
 // express.urlencoded() is a built-in middleware which populates the req.body
 // object according to the incoming POST/PUT/etc. request's data.
