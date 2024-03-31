@@ -101,13 +101,22 @@ app.get("/restaurants/new", (req, res) => {
     res.render("restaurants/new");
 });
 
-app.post("/restaurants", async (req, res) => {
-    const restaurant = new Restaurant(req.body.restaurant);
-    await restaurant.save();
+////////////////////////////////////////////////////////////////////////////////
 
-    // This redirects to the specified path.
-    res.redirect(`/restaurants/${restaurant._id}`);
+// Add a note here.
+app.post("/restaurants", async (req, res, next) => {
+    try {
+        const restaurant = new Restaurant(req.body.restaurant);
+        await restaurant.save();
+
+        // This redirects to the specified path.
+        res.redirect(`/restaurants/${restaurant._id}`);
+    } catch (e) {
+        next(e);
+    }
 });
+
+////////////////////////////////////////////////////////////////////////////////
 
 // The order in which these routes have been defined matters.
 app.get("/restaurants/:id", async (req, res) => {
@@ -133,6 +142,15 @@ app.delete("/restaurants/:id", async (req, res) => {
     await Restaurant.findByIdAndDelete(req.params.id);
     res.redirect("/restaurants");
 });
+
+////////////////////////////////////////////////////////////////////////////////
+
+// Add a note here.
+app.use((err, req, res, next) => {
+    res.send("Oh Boy, Something Went Wrong!");
+});
+
+////////////////////////////////////////////////////////////////////////////////
 
 // This starts up the server on port 3000 and invokes the specified callback
 // function.
