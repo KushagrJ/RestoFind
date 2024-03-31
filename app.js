@@ -50,19 +50,34 @@ app.set("views", path.join(__dirname, "views"));
 // can be used simultaneously.
 app.engine("ejs", ejs_mate);
 
-// express.urlencoded() is a built-in middleware which populates the req.body
-// object according to the incoming POST/PUT/etc. request's data.
+// express.urlencoded() returns a built-in middleware function which populates
+// the req.body object according to the incoming HTTP POST/PUT/etc. request's
+// data.
 app.use(express.urlencoded({ extended: true }));
 
-// method override is a middleware which lets you use HTTP verbs such as PUT or
-// DELETE in places where the client doesn't support it.
+// method_override() returns a middleware function which lets you use HTTP verbs
+// such as PUT or DELETE in places where the client doesn't support it.
 // For eg., you can only send a GET request or a POST request via an HTML form.
 app.use(method_override("_method"));
 
-// This invokes the specified callback function whenever there is an HTTP GET
-// request with a path "/" relative to the website's root.
-// The callback function takes 2 arguments, commonly named as req and res, which
-// are both provided by express.
+// app.use() is generally used for introducing middlewares, and can handle all
+// types of HTTP requests.
+// On the other hand, for eg., app.get() can only handle HTTP GET requests.
+
+// If no path is specified as the first argument of an app.use(), then the
+// specified middleware function gets called for every HTTP request.
+// However, if a path is specified as the first argument of an app.use(),
+// for eg., "/book", then the corresponding middleware function gets called for
+// every request with a path starting with "/book" relative to the website's
+// root, for eg., "/book", "/book/1", "/book/page/index", etc.
+// On the other hand, for eg., app.get() only calls the corresponding middleware
+// function for those HTTP GET requests with a path exactly matching its first
+// argument.
+
+// This calls the specified middleware function whenever there is an HTTP GET
+// request with a path "/".
+// The middleware function takes multiple arguments, commonly named as req, res,
+// etc., which are all provided by Express.
 // req is an object containing information about the corresponding incoming HTTP
 // request, and res is an object which can be used to send back the desired HTTP
 // response.
@@ -101,9 +116,19 @@ app.get("/restaurants/new", (req, res) => {
     res.render("restaurants/new");
 });
 
-////////////////////////////////////////////////////////////////////////////////
+// Within a middleware function which does not end the request-response cycle
+// (for eg., by using res.send(), res.render(), res.redirect(), etc.), we use
+// the next() function to execute the next middleware function in line.
+// However, if an error argument is passed to next(), for eg., next(err), then
+// all remaining middleware functions in the chain are skipped except for those
+// that are correspondingly set up to handle that error.
 
-// Add a note here.
+// To handle errors within asynchronous functions, we must pass them to the
+// next() function, where Express will catch and process them if no
+// corresponding middleware functions have been set up to handle those errors.
+// However, errors that occur within synchronous functions require no extra
+// work. Express will automatically catch and process them if no corresponding
+// middleware functions have been set up to handle those errors.
 app.post("/restaurants", async (req, res, next) => {
     try {
         const restaurant = new Restaurant(req.body.restaurant);
@@ -111,12 +136,10 @@ app.post("/restaurants", async (req, res, next) => {
 
         // This redirects to the specified path.
         res.redirect(`/restaurants/${restaurant._id}`);
-    } catch (e) {
-        next(e);
+    } catch (err) {
+        next(err);
     }
 });
-
-////////////////////////////////////////////////////////////////////////////////
 
 // The order in which these routes have been defined matters.
 app.get("/restaurants/:id", async (req, res) => {
@@ -145,7 +168,8 @@ app.delete("/restaurants/:id", async (req, res) => {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Add a note here.
+// Error-handling middleware functions have four arguments: err, req, res and
+// next.
 app.use((err, req, res, next) => {
     res.send("Oh Boy, Something Went Wrong!");
 });
