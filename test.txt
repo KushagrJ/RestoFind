@@ -33,4 +33,8 @@
 
  * To understand Bootstrap, see documentations, Google, etc.
 
+ * The asyncHandler() described at https://stackoverflow.com/a/51391081 has not
+   been used here because understanding it requires a good knowledge of
+   JavaScript.
+
  */

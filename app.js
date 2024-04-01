@@ -90,35 +90,10 @@ app.get("/", (req, res) => {
     res.render("home");
 });
 
-app.get("/restaurants", async (req, res) => {
-    const restaurants = await Restaurant.find({});
-
-    // This makes the restaurants variable (which refers to the array containing
-    // every restaurant document (object)) available in the index.ejs file.
-    res.render("restaurants/index", { restaurants });
-});
-
-// app.get("/makerestaurant", async (req, res) => {
-//     // This creates a new Mongoose document.
-//     const restaurant = new Restaurant({
-//         title: "Bobby Snacks",
-//         description: "Best Paneer Chilli in Asansol"
-//     });
-
-//     // This saves the specified Mongoose document to MongoDB as a MongoDB
-//     // document within the restaurants MongoDB collection.
-//     await restaurant.save();
-
-//     res.send(restaurant);
-// });
-
-app.get("/restaurants/new", (req, res) => {
-    res.render("restaurants/new");
-});
-
 // Within a middleware function which does not end the request-response cycle
 // (for eg., by using res.send(), res.render(), res.redirect(), etc.), we use
-// the next() function to execute the next middleware function in line.
+// the next() function (without any arguments) to execute the next middleware
+// function in line.
 // However, if an error argument is passed to next(), for eg., next(err), then
 // all remaining middleware functions in the chain are skipped except for those
 // that are correspondingly set up to handle that error.
@@ -129,6 +104,43 @@ app.get("/restaurants/new", (req, res) => {
 // However, errors that occur within synchronous functions require no extra
 // work. Express will automatically catch and process them if no corresponding
 // middleware functions have been set up to handle those errors.
+// Express' built-in error handling middleware function is added at the end of
+// the middleware function stack.
+app.get("/restaurants", async (req, res, next) => {
+    try {
+        const restaurants = await Restaurant.find({});
+
+        // This makes the restaurants variable (which refers to the array
+        // containing every restaurant document (object)) available in the
+        // index.ejs file.
+        res.render("restaurants/index", { restaurants });
+    } catch (err) {
+        next(err);
+    }
+});
+
+// app.get("/makerestaurant", async (req, res, next) => {
+//     try {
+//         // This creates a new Mongoose document.
+//         const restaurant = new Restaurant({
+//             title: "Bobby Snacks",
+//             description: "Best Paneer Chilli in Asansol"
+//         });
+
+//         // This saves the specified Mongoose document to MongoDB as a MongoDB
+//         // document within the restaurants MongoDB collection.
+//         await restaurant.save();
+
+//         res.send(restaurant);
+//     } catch (err) {
+//         next(err);
+//     }
+// });
+
+app.get("/restaurants/new", (req, res) => {
+    res.render("restaurants/new");
+});
+
 app.post("/restaurants", async (req, res, next) => {
     try {
         const restaurant = new Restaurant(req.body.restaurant);
@@ -142,39 +154,51 @@ app.post("/restaurants", async (req, res, next) => {
 });
 
 // The order in which these routes have been defined matters.
-app.get("/restaurants/:id", async (req, res) => {
-    // The id in the path can be accessed using req.params.id.
-    const restaurant = await Restaurant.findById(req.params.id);
+app.get("/restaurants/:id", async (req, res, next) => {
+    try {
+        // The id in the path can be accessed using req.params.id.
+        const restaurant = await Restaurant.findById(req.params.id);
 
-    res.render("restaurants/show", { restaurant });
+        res.render("restaurants/show", { restaurant });
+    } catch (err) {
+        next(err);
+    }
 });
 
 app.get("/restaurants/:id/edit", async (req, res) => {
-    const restaurant = await Restaurant.findById(req.params.id);
-    res.render("restaurants/edit", { restaurant });
+    try {
+        const restaurant = await Restaurant.findById(req.params.id);
+        res.render("restaurants/edit", { restaurant });
+    } catch (err) {
+        next(err);
+    }
 });
 
 app.put("/restaurants/:id", async (req, res) => {
-    const restaurant = await
-        Restaurant.findByIdAndUpdate(req.params.id, req.body.restaurant);
+    try {
+        const restaurant = await
+            Restaurant.findByIdAndUpdate(req.params.id, req.body.restaurant);
 
-    res.redirect(`/restaurants/${restaurant._id}`);
+        res.redirect(`/restaurants/${restaurant._id}`);
+    } catch (err) {
+        next(err);
+    }
 });
 
 app.delete("/restaurants/:id", async (req, res) => {
-    await Restaurant.findByIdAndDelete(req.params.id);
-    res.redirect("/restaurants");
+    try {
+        await Restaurant.findByIdAndDelete(req.params.id);
+        res.redirect("/restaurants");
+    } catch (err) {
+        next(err);
+    }
 });
-
-////////////////////////////////////////////////////////////////////////////////
 
 // Error-handling middleware functions have four arguments: err, req, res and
 // next.
 app.use((err, req, res, next) => {
     res.send("Oh Boy, Something Went Wrong!");
 });
-
-////////////////////////////////////////////////////////////////////////////////
 
 // This starts up the server on port 3000 and invokes the specified callback
 // function.
