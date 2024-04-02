@@ -21,6 +21,8 @@ const ejs_mate = require("ejs-mate");
 // This imports the model exported in the restaurant.js file.
 const Restaurant = require("./models/restaurant");
 
+const ExpressError = require("./utils/ExpressError");
+
 // This connects Mongoose to the MongoDB database called resto-find.
 // There is no need to await mongoose.connect() because Mongoose buffers the
 // function calls related to Mongoose models internally.
@@ -70,6 +72,8 @@ app.use(method_override("_method"));
 // for eg., "/book", then the corresponding middleware function gets called for
 // every request with a path starting with "/book" relative to the website's
 // root, for eg., "/book", "/book/1", "/book/page/index", etc.
+// So, in other words, if no path is specified as the first argument of an
+// app.use(), then "/" becomes the default value for the path argument.
 // On the other hand, for eg., app.get() only calls the corresponding middleware
 // function for those HTTP GET requests with a path exactly matching its first
 // argument.
@@ -143,6 +147,10 @@ app.get("/restaurants/new", (req, res) => {
 
 app.post("/restaurants", async (req, res, next) => {
     try {
+        if (!(req.body.restaurant)) {
+            throw new ExpressError(400, "Invalid restaurant data");
+        }
+
         const restaurant = new Restaurant(req.body.restaurant);
         await restaurant.save();
 
@@ -165,7 +173,7 @@ app.get("/restaurants/:id", async (req, res, next) => {
     }
 });
 
-app.get("/restaurants/:id/edit", async (req, res) => {
+app.get("/restaurants/:id/edit", async (req, res, next) => {
     try {
         const restaurant = await Restaurant.findById(req.params.id);
         res.render("restaurants/edit", { restaurant });
@@ -174,7 +182,7 @@ app.get("/restaurants/:id/edit", async (req, res) => {
     }
 });
 
-app.put("/restaurants/:id", async (req, res) => {
+app.put("/restaurants/:id", async (req, res, next) => {
     try {
         const restaurant = await
             Restaurant.findByIdAndUpdate(req.params.id, req.body.restaurant);
@@ -185,7 +193,7 @@ app.put("/restaurants/:id", async (req, res) => {
     }
 });
 
-app.delete("/restaurants/:id", async (req, res) => {
+app.delete("/restaurants/:id", async (req, res, next) => {
     try {
         await Restaurant.findByIdAndDelete(req.params.id);
         res.redirect("/restaurants");
@@ -194,10 +202,26 @@ app.delete("/restaurants/:id", async (req, res) => {
     }
 });
 
+// app.all() calls the specified middleware function whenever there is any HTTP
+// request with the specified path. "*" is a wildcard path which matches every
+// path.
+// There is no meaningful difference between app.use(fn) (or app.use("/", fn))
+// and app.all("*", fn). However, for other paths, as described above, app.use()
+// matches any path that starts with the specified path, whereas app.all() only
+// matches exact paths.
+app.all("*", (req, res, next) => {
+    next(new ExpressError(404, "Page Not Found!"));
+});
+
 // Error-handling middleware functions have four arguments: err, req, res and
 // next.
 app.use((err, req, res, next) => {
-    res.send("Oh Boy, Something Went Wrong!");
+    // This sets default values for statusCode and message when destructuring in
+    // case they are undefined.
+    const { statusCode = 500, message = "Something went wrong" } = err;
+
+    res.status(statusCode);
+    res.send(message);
 });
 
 // This starts up the server on port 3000 and invokes the specified callback
