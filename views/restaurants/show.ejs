@@ -1,12 +1,12 @@
 <!--
-    _method=DELETE tells Express (via method-override) to treat this as a DELETE
+    ?_method=DELETE tells Express (via method-override) to treat this as a DELETE
     request, instead of a POST request.
 -->
 
 <% layout("layouts/boilerplate") %>
 
 <div class="row">
-    <div class="col-6 offset-3">
+    <div class="col-6">
         <div class="card mb-3">
             <img class="card-img-top" src="<%= restaurant.image %>" alt="Card image cap">
 
@@ -32,5 +32,38 @@
                 2 days ago
             </div>
         </div>
+    </div>
+
+    <div class="col-6">
+        <h2>Leave a review</h2>
+
+        <form class="mb-3 needs-validation" action="/restaurants/<%= restaurant._id %>/reviews" method="POST"
+            novalidate>
+            <div class="mb-3">
+                <label class="form-label" for="rating">Rating</label>
+                <input class="form-range" type="range" min="1" max="5" name="review[rating]" id="rating">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="body">Review</label>
+                <textarea class="form-control" name="review[body]" id="body" rows="3" required></textarea>
+            </div>
+
+            <button class="btn btn-success">Submit</button>
+        </form>
+
+        <% for (let review of restaurant.reviews) { %>
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Rating: <%= review.rating %></h5>
+                <p class="card-text"><%= review.body %></p>
+
+                <form action="/restaurants/<%= restaurant._id %>/reviews/<%= review._id %>?_method=DELETE"
+                    method="POST">
+                    <button class="btn btn-sm btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+        <% } %>
     </div>
 </div>

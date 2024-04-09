@@ -5,23 +5,24 @@
 const express = require("express");
 const app = express();
 
-// This imports the path module, which provides utilities for working with file
-// and directory paths.
+// The path module provides utilities for working with file and directory paths.
 const path = require("path");
 
-// This imports the Mongoose module.
 const mongoose = require("mongoose");
 
-// This imports the method-override module.
 const method_override = require("method-override");
 
-// This imports the ejs-mate module.
 const ejs_mate = require("ejs-mate");
 
-// This imports the model exported in the restaurant.js file.
+// This imports the Mongoose model exported in the restaurant.js file.
 const Restaurant = require("./models/restaurant");
 
-const ExpressError = require("./utils/ExpressError");
+const Review = require("./models/review");
+
+const ExpressError = require("./utils/express-error");
+
+const { RestaurantValidationSchema, ReviewValidationSchema } =
+    require("./utils/validation-schemas");
 
 // This connects Mongoose to the MongoDB database called resto-find.
 // There is no need to await mongoose.connect() because Mongoose buffers the
@@ -145,12 +146,24 @@ app.get("/restaurants/new", (req, res) => {
     res.render("restaurants/new");
 });
 
-app.post("/restaurants", async (req, res, next) => {
-    try {
-        if (!(req.body.restaurant)) {
-            throw new ExpressError(400, "Invalid restaurant data");
-        }
+const validate_restaurant = (req, res, next) => {
+    // If the validation is successful, then error will be undefined.
+    const { error } = RestaurantValidationSchema.validate(req.body);
 
+    if (error) {
+        // error.details is an array of objects with each object having a
+        // message property. This creates a single message by joining them.
+        const message = error.details.map(el => el.message).join(", ");
+
+        throw new ExpressError(400, message);
+    } else {
+        next();
+    }
+};
+
+// Multiple middleware functions can be chained one after another.
+app.post("/restaurants", validate_restaurant, async (req, res, next) => {
+    try {
         const restaurant = new Restaurant(req.body.restaurant);
         await restaurant.save();
 
@@ -165,7 +178,11 @@ app.post("/restaurants", async (req, res, next) => {
 app.get("/restaurants/:id", async (req, res, next) => {
     try {
         // The id in the path can be accessed using req.params.id.
-        const restaurant = await Restaurant.findById(req.params.id);
+        // populate("reviews") populates the reviews array in the returned
+        // document (object) from the restaurants collection with the
+        // corresponding data from the reviews collection.
+        const restaurant =
+            await Restaurant.findById(req.params.id).populate("reviews");
 
         res.render("restaurants/show", { restaurant });
     } catch (err) {
@@ -182,7 +199,7 @@ app.get("/restaurants/:id/edit", async (req, res, next) => {
     }
 });
 
-app.put("/restaurants/:id", async (req, res, next) => {
+app.put("/restaurants/:id", validate_restaurant, async (req, res, next) => {
     try {
         const restaurant = await
             Restaurant.findByIdAndUpdate(req.params.id, req.body.restaurant);
@@ -202,6 +219,52 @@ app.delete("/restaurants/:id", async (req, res, next) => {
     }
 });
 
+const validate_review = (req, res, next) => {
+    const { error } = ReviewValidationSchema.validate(req.body);
+
+    if (error) {
+        const message = error.details.map(el => el.message).join(", ");
+        throw new ExpressError(400, message);
+    } else {
+        next();
+    }
+};
+
+app.post("/restaurants/:id/reviews", validate_review,
+    async (req, res, next) => {
+        try {
+            const restaurant = await Restaurant.findById(req.params.id);
+            const review = new Review(req.body.review);
+
+            // Even though it looks like the entire review gets pushed, only the
+            // object id of the review actually gets pushed, as the
+            // RestaurantSchema has been defined in this way.
+            restaurant.reviews.push(review);
+
+            await restaurant.save();
+            await review.save();
+
+            res.redirect(`/restaurants/${restaurant._id}`)
+        } catch (err) {
+            next(err);
+        }
+    });
+
+app.delete("/restaurants/:id/reviews/:review_id", async (req, res, next) => {
+    try {
+        // This deletes all occurrences of review_id from the reviews array
+        // within the corresponding restaurants document.
+        await Restaurant.findByIdAndUpdate(req.params.id,
+            { $pull: { reviews: req.params.review_id } });
+
+        await Review.findByIdAndDelete(req.params.review_id);
+
+        res.redirect(`/restaurants/${req.params.id}`);
+    } catch (err) {
+        next(err);
+    }
+});
+
 // app.all() calls the specified middleware function whenever there is any HTTP
 // request with the specified path. "*" is a wildcard path which matches every
 // path.
@@ -216,15 +279,22 @@ app.all("*", (req, res, next) => {
 // Error-handling middleware functions have four arguments: err, req, res and
 // next.
 app.use((err, req, res, next) => {
-    // This sets default values for statusCode and message when destructuring in
-    // case they are undefined.
-    const { statusCode = 500, message = "Something went wrong" } = err;
+    // This sets the default value for statusCode when destructuring, in case
+    // it's undefined.
+    const { statusCode = 500 } = err;
+
+    // This is different from above where the statusCode variable, and not the
+    // err object's statusCode property, gets the default value, as here the err
+    // object's message property gets the default value, in case it's undefined.
+    if (!(err.message)) {
+        err.message = "Oh No, Something Went Wrong!";
+    }
 
     res.status(statusCode);
-    res.send(message);
+    res.render("error", { err });
 });
 
-// This starts up the server on port 3000 and invokes the specified callback
+// This starts up the server on port 3000 and calls the specified callback
 // function.
 app.listen(3000, () => {
     console.log("Serving on port 3000!");

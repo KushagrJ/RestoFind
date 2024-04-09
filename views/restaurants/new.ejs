@@ -5,6 +5,12 @@
 
     novalidate disables the client-side browser default validations for the
     form, and allows Bootstrap to take over.
+
+    The client-side validations only ensure that something is entered in every
+    field of the form.
+    Using client-side validations to ensure that, for eg., the price is a
+    positive number, is useless, as someone can still use, for eg., Postman, to
+    bypass the client-side validations.
 -->
 
 <% layout("layouts/boilerplate") %>
@@ -18,27 +24,27 @@
                 <label class="form-label" for="title">Title</label>
                 <input class="form-control" type="text" id="title" name="restaurant[title]" required>
 
-                <div class="valid-feedback">
+                <!-- <div class="valid-feedback">
                     Looks good!
-                </div>
+                </div> -->
             </div>
 
             <div class="mb-3">
                 <label class="form-label" for="location">Location</label>
                 <input class="form-control" type="text" id="location" name="restaurant[location]" required>
 
-                <div class="valid-feedback">
+                <!-- <div class="valid-feedback">
                     Looks good!
-                </div>
+                </div> -->
             </div>
 
             <div class="mb-3">
                 <label class="form-label" for="image">Image URL</label>
                 <input class="form-control" type="text" id="image" name="restaurant[image]" required>
 
-                <div class="valid-feedback">
+                <!-- <div class="valid-feedback">
                     Looks good!
-                </div>
+                </div> -->
             </div>
 
             <div class="mb-3">
@@ -49,9 +55,9 @@
                     <input class="form-control" type="text" id="price" name="restaurant[price]" placeholder="0.00"
                         aria-label="price" aria-describedby="price-label" required>
 
-                    <div class="valid-feedback">
+                    <!-- <div class="valid-feedback">
                         Looks good!
-                    </div>
+                    </div> -->
                 </div>
             </div>
 
@@ -60,9 +66,9 @@
                 <textarea class="form-control" type="text" id="description" name="restaurant[description]"
                     required></textarea>
 
-                <div class="valid-feedback">
+                <!-- <div class="valid-feedback">
                     Looks good!
-                </div>
+                </div> -->
             </div>
 
             <div class="mb-3">

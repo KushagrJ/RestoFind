@@ -17,8 +17,8 @@
    corresponding Node.js web application.
  * npm init -y will create the package.json file using the default settings.
 
- * Use sudo npm i express mongoose ejs method-override to install Express,
-   Mongoose, EJS and method-override for the corresponding Node.js project.
+ * Use sudo npm i express mongoose ejs method-override etc. to install Express,
+   Mongoose, EJS, method-override, etc. for the corresponding Node.js project.
 
  * Use node app.js or nodemon app.js to start the Express server.
    Using nodemon will automatically restart the server whenever changes are
