@@ -20,6 +20,7 @@
     <%- include("../partials/navbar") %>
 
     <main class="container mt-5">
+        <%- include("../partials/flash") %>
         <%- body %>
     </main>
 
@@ -30,31 +31,9 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
-    <!-- Used by Bootstrap for client-side validations for the forms. -->
-    <script>
-        // Example starter JavaScript for disabling form submissions if there
-        // are invalid fields.
-        (function () {
-            "use strict"
-
-            // Fetch all the forms we want to apply custom Bootstrap validation
-            // styles to.
-            const forms = document.querySelectorAll(".needs-validation");
-
-            // Loop over them and prevent submission.
-            Array.from(forms)
-                .forEach(function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (!form.checkValidity()) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-
-                        form.classList.add("was-validated");
-                    }, false)
-                });
-        })();
-    </script>
+    <!-- Used by Bootstrap for client-side validations for the forms (using the
+    form-validations.js file within the public/scripts/ directory). -->
+    <script src="/scripts/form-validations.js"></script>
 </body>
 
 </html>

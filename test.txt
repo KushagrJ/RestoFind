@@ -37,4 +37,7 @@
    been used here because understanding it requires a good knowledge of
    JavaScript.
 
+ * To understand cookies and sessions, see https://stackoverflow.com/q/3804209,
+   MDN, freeCodeCamp, Google, etc.
+
  */

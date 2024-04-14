@@ -9,20 +9,16 @@ const app = express();
 const path = require("path");
 
 const mongoose = require("mongoose");
-
 const method_override = require("method-override");
-
 const ejs_mate = require("ejs-mate");
-
-// This imports the Mongoose model exported in the restaurant.js file.
-const Restaurant = require("./models/restaurant");
-
-const Review = require("./models/review");
-
+const session = require("express-session");
+const flash = require("connect-flash");
 const ExpressError = require("./utils/express-error");
 
-const { RestaurantValidationSchema, ReviewValidationSchema } =
-    require("./utils/validation-schemas");
+// These allow the routes defined in the restaurants.js and the reviews.js files
+// to be used in this file.
+const restaurants = require("./routes/restaurants");
+const reviews = require("./routes/reviews");
 
 // This connects Mongoose to the MongoDB database called resto-find.
 // There is no need to await mongoose.connect() because Mongoose buffers the
@@ -63,6 +59,25 @@ app.use(express.urlencoded({ extended: true }));
 // For eg., you can only send a GET request or a POST request via an HTML form.
 app.use(method_override("_method"));
 
+// This allows static assets (images, JavaScript files, etc.) within the public
+// directory to be served to the client.
+app.use(express.static(path.join(__dirname, "public")));
+
+app.use(session({
+    secret: "this-should-be-a-better-secret-message",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + (1000 * 60 * 60 * 24 * 7),
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    }
+}));
+
+// This is used to display flash messages, for eg., Successfully registered!,
+// etc., using sessions.
+app.use(flash());
+
 // app.use() is generally used for introducing middlewares, and can handle all
 // types of HTTP requests.
 // On the other hand, for eg., app.get() can only handle HTTP GET requests.
@@ -79,21 +94,21 @@ app.use(method_override("_method"));
 // function for those HTTP GET requests with a path exactly matching its first
 // argument.
 
-// This calls the specified middleware function whenever there is an HTTP GET
-// request with a path "/".
-// The middleware function takes multiple arguments, commonly named as req, res,
-// etc., which are all provided by Express.
-// req is an object containing information about the corresponding incoming HTTP
-// request, and res is an object which can be used to send back the desired HTTP
-// response.
-app.get("/", (req, res) => {
-    // // This sends back the specified string as the HTTP response.
-    // res.send("HELLO FROM RESTO FIND!");
-
-    // This renders and sends back the specified HTML page (home.ejs) as the
-    // HTTP response.
-    res.render("home");
-});
+// // This calls the specified middleware function whenever there is an HTTP GET
+// // request with a path "/".
+// // The middleware function takes multiple arguments, commonly named as req,
+// // res, etc., which are all provided by Express.
+// // req is an object containing information about the corresponding incoming
+// // HTTP, request, and res is an object which can be used to send back the
+// // desired HTTP response.
+// app.get("/", (req, res) => {
+//     // // This sends back the specified string as the HTTP response.
+//     // res.send("HELLO FROM RESTO FIND!");
+//
+//     // This renders and sends back the specified HTML page (home.ejs) as the
+//     // HTTP response.
+//     res.render("home");
+// });
 
 // Within a middleware function which does not end the request-response cycle
 // (for eg., by using res.send(), res.render(), res.redirect(), etc.), we use
@@ -111,18 +126,6 @@ app.get("/", (req, res) => {
 // middleware functions have been set up to handle those errors.
 // Express' built-in error handling middleware function is added at the end of
 // the middleware function stack.
-app.get("/restaurants", async (req, res, next) => {
-    try {
-        const restaurants = await Restaurant.find({});
-
-        // This makes the restaurants variable (which refers to the array
-        // containing every restaurant document (object)) available in the
-        // index.ejs file.
-        res.render("restaurants/index", { restaurants });
-    } catch (err) {
-        next(err);
-    }
-});
 
 // app.get("/makerestaurant", async (req, res, next) => {
 //     try {
@@ -142,128 +145,27 @@ app.get("/restaurants", async (req, res, next) => {
 //     }
 // });
 
-app.get("/restaurants/new", (req, res) => {
-    res.render("restaurants/new");
+app.use((req, res, next) => {
+    // This makes the success variable (which refers to the array containing
+    // the currently available success flash messages with respect to the
+    // current session) available in every ejs file.
+    res.locals.success = req.flash("success");
+
+    res.locals.error = req.flash("error");
+
+    next();
 });
 
-const validate_restaurant = (req, res, next) => {
-    // If the validation is successful, then error will be undefined.
-    const { error } = RestaurantValidationSchema.validate(req.body);
+// This is used to break up the routes into multiple files.
+// So, instead of defining routes like app.get("/restaurants/", ...) in this
+// file, we can define routes like router.get("/", ...) in a separate file
+// (restaurants.js), and attach a prefix of "/restaurants" to every route
+// defined in that file.
+app.use("/restaurants", restaurants);
 
-    if (error) {
-        // error.details is an array of objects with each object having a
-        // message property. This creates a single message by joining them.
-        const message = error.details.map(el => el.message).join(", ");
-
-        throw new ExpressError(400, message);
-    } else {
-        next();
-    }
-};
-
-// Multiple middleware functions can be chained one after another.
-app.post("/restaurants", validate_restaurant, async (req, res, next) => {
-    try {
-        const restaurant = new Restaurant(req.body.restaurant);
-        await restaurant.save();
-
-        // This redirects to the specified path.
-        res.redirect(`/restaurants/${restaurant._id}`);
-    } catch (err) {
-        next(err);
-    }
-});
-
-// The order in which these routes have been defined matters.
-app.get("/restaurants/:id", async (req, res, next) => {
-    try {
-        // The id in the path can be accessed using req.params.id.
-        // populate("reviews") populates the reviews array in the returned
-        // document (object) from the restaurants collection with the
-        // corresponding data from the reviews collection.
-        const restaurant =
-            await Restaurant.findById(req.params.id).populate("reviews");
-
-        res.render("restaurants/show", { restaurant });
-    } catch (err) {
-        next(err);
-    }
-});
-
-app.get("/restaurants/:id/edit", async (req, res, next) => {
-    try {
-        const restaurant = await Restaurant.findById(req.params.id);
-        res.render("restaurants/edit", { restaurant });
-    } catch (err) {
-        next(err);
-    }
-});
-
-app.put("/restaurants/:id", validate_restaurant, async (req, res, next) => {
-    try {
-        const restaurant = await
-            Restaurant.findByIdAndUpdate(req.params.id, req.body.restaurant);
-
-        res.redirect(`/restaurants/${restaurant._id}`);
-    } catch (err) {
-        next(err);
-    }
-});
-
-app.delete("/restaurants/:id", async (req, res, next) => {
-    try {
-        await Restaurant.findByIdAndDelete(req.params.id);
-        res.redirect("/restaurants");
-    } catch (err) {
-        next(err);
-    }
-});
-
-const validate_review = (req, res, next) => {
-    const { error } = ReviewValidationSchema.validate(req.body);
-
-    if (error) {
-        const message = error.details.map(el => el.message).join(", ");
-        throw new ExpressError(400, message);
-    } else {
-        next();
-    }
-};
-
-app.post("/restaurants/:id/reviews", validate_review,
-    async (req, res, next) => {
-        try {
-            const restaurant = await Restaurant.findById(req.params.id);
-            const review = new Review(req.body.review);
-
-            // Even though it looks like the entire review gets pushed, only the
-            // object id of the review actually gets pushed, as the
-            // RestaurantSchema has been defined in this way.
-            restaurant.reviews.push(review);
-
-            await restaurant.save();
-            await review.save();
-
-            res.redirect(`/restaurants/${restaurant._id}`)
-        } catch (err) {
-            next(err);
-        }
-    });
-
-app.delete("/restaurants/:id/reviews/:review_id", async (req, res, next) => {
-    try {
-        // This deletes all occurrences of review_id from the reviews array
-        // within the corresponding restaurants document.
-        await Restaurant.findByIdAndUpdate(req.params.id,
-            { $pull: { reviews: req.params.review_id } });
-
-        await Review.findByIdAndDelete(req.params.review_id);
-
-        res.redirect(`/restaurants/${req.params.id}`);
-    } catch (err) {
-        next(err);
-    }
-});
+// Similarly, we can attach a prefix of "/restaurants/:id/reviews" to every
+// route defined in the reviews.js file.
+app.use("/restaurants/:id/reviews", reviews);
 
 // app.all() calls the specified middleware function whenever there is any HTTP
 // request with the specified path. "*" is a wildcard path which matches every
