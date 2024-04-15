@@ -64,7 +64,17 @@ app.use(method_override("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use(session({
+    // A secret message is used to sign the session id (which will be stored
+    // using a cookie on the client-side) via hashing in order to make session
+    // hijacking very difficult, as a bad actor cannot easily pretend to be
+    // another user by changing the session id, as any tampering with the
+    // session id will get detected, unless the bad actor changes the session id
+    // in a way such that the new session id also represents a valid, signed
+    // session id corresponding to another user, which is very difficult to do.
+    // This is the same thing that is done by cookie-parser when signing cookies
+    // in order to identify whether the cookies have been tampered with.
     secret: "this-should-be-a-better-secret-message",
+
     resave: false,
     saveUninitialized: true,
     cookie: {

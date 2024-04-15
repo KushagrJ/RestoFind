@@ -37,7 +37,22 @@
    been used here because understanding it requires a good knowledge of
    JavaScript.
 
- * To understand cookies and sessions, see https://stackoverflow.com/q/3804209,
+ * To understand cookies and sessions, see https://stackoverflow.com/a/32564053,
    MDN, freeCodeCamp, Google, etc.
+
+ * const hashed_password = await bcrypt.hash(password, 12);
+   Here, 12 represents the cost factor, which controls how much time is needed
+   to calculate a single BCrypt hash. The higher the cost factor, the more
+   hashing rounds are done. Increasing the cost factor by 1 doubles the
+   necessary time. The more time is necessary, the more difficult is
+   brute-forcing.
+ * The hashed password consists of the salt in plain text, concatenated with the
+   hashed version of the salt + the password.
+   For eg., if the salt is nOUIs5kJ7naTuTFkBy1veu and if the password is abcdef,
+   then the resulting hashed password may be
+   $2y$12$nOUIs5kJ7naTuTFkBy1veuK0kSxUFXfuaOKdOKf9xYT0KKIGSJwFa, where 2y
+   represents the hashing algorithm (BCrypt), 12 is the cost factor,
+   nOUIs5kJ7naTuTFkBy1veu is the salt, and K0kSxUFXfuaOKdOKf9xYT0KKIGSJwFa is
+   the hashed version of the salt + abcdef.
 
  */
