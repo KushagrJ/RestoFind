@@ -55,4 +55,14 @@
    nOUIs5kJ7naTuTFkBy1veu is the salt, and K0kSxUFXfuaOKdOKf9xYT0KKIGSJwFa is
    the hashed version of the salt + abcdef.
 
+ * To be added as a comment later -
+
+   if (!(req.session.user_id)) {
+       // This code will be reached, for eg., when user_id is undefined (such
+       // as when the user_id property doesn't exist on the session object
+       // because no successful login has been done in the current session), or
+       // when user_id is equal to null (such as when user_id is explicitly
+       // assigned null during logging out the user within the current session).
+   }
+
  */

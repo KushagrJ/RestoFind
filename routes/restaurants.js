@@ -71,7 +71,10 @@ router.get("/:id", async (req, res, next) => {
             // This code will be reached only when req.params.id is a valid
             // 12-byte hexadecimal string and it doesn't correspond to any
             // actual document, as in this case, Mongoose will not throw any
-            // error and will simply leave restaurant as undefined.
+            // error and will simply assign null to restaurant.
+            // When there are no matches, then, for eg., find() returns an empty
+            // array, whereas, for eg., findById (which internally calls
+            // findOne()) returns null.
             req.flash("error", "Couldn't find that restaurant!");
             res.redirect("/restaurants");
         } else {

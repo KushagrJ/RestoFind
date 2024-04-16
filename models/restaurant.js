@@ -31,7 +31,8 @@ const Review = require("./review");
 // makes the specified middleware function get called after (as this is a post,
 // not pre, middleware) the job of findOneAndDelete() is done.
 // Also, the specified middleware function gets passed the deleted Mongoose
-// document as an argument.
+// document as an argument, which may be null in case the document to be deleted
+// wasn't found (no errors are thrown in this case).
 // Since findByIdAndDelete() internally calls findOneAndDelete(), therefore we
 // are attaching the specified middleware function to findOneAndDelete().
 // Here, an arrow function is not used to potentially avoid future problems
