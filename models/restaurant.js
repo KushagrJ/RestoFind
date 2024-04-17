@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-// Instead of using mongoose.Schema, you can now use Schema.
+// Instead of using mongoose.Schema, we can now use Schema.
 const Schema = mongoose.Schema;
 
 // This creates a Mongoose schema.

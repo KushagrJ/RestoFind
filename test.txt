@@ -31,8 +31,6 @@
    to start the MongoDB service.
  * To access the MongoDB shell, use mongosh (instead of mongo).
 
- * To understand Bootstrap, see documentations, Google, etc.
-
  * The asyncHandler() described at https://stackoverflow.com/a/51391081 has not
    been used here because understanding it requires a good knowledge of
    JavaScript.
@@ -54,15 +52,18 @@
    represents the hashing algorithm (BCrypt), 12 is the cost factor,
    nOUIs5kJ7naTuTFkBy1veu is the salt, and K0kSxUFXfuaOKdOKf9xYT0KKIGSJwFa is
    the hashed version of the salt + abcdef.
-
- * To be added as a comment later -
-
-   if (!(req.session.user_id)) {
+ * if (!(req.session.user_id)) {
        // This code will be reached, for eg., when user_id is undefined (such
-       // as when the user_id property doesn't exist on the session object
+       // as when the user_id property doesn't exist on the req.session object
        // because no successful login has been done in the current session), or
        // when user_id is equal to null (such as when user_id is explicitly
        // assigned null during logging out the user within the current session).
    }
+ * Instead of implementing authentication from scratch (by using brycpt, by
+   manually manipulating the req.session object, etc. (as shown above)), we have
+   used Passport.js, which does all of this work for us.
+
+ * To understand Bootstrap, EJS, Node.js, Express.js, MongoDB, Mongoose.js,
+   Passport.js, etc., see MDN, freeCodeCamp, documentations, Google, etc.
 
  */

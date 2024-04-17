@@ -11,21 +11,29 @@ const path = require("path");
 const mongoose = require("mongoose");
 const method_override = require("method-override");
 const ejs_mate = require("ejs-mate");
+
 const session = require("express-session");
 const flash = require("connect-flash");
+
+const passport = require("passport");
+const local_strategy = require("passport-local");
+
+const User = require("./models/user");
+
 const ExpressError = require("./utils/express-error");
 
-// These allow the routes defined in the restaurants.js and the reviews.js files
-// to be used in this file.
-const restaurants = require("./routes/restaurants");
-const reviews = require("./routes/reviews");
+// These allow the routes defined in the restaurants.js, reviews.js and the
+// users.js files to be used in this file.
+const restaurant_routes = require("./routes/restaurants");
+const review_routes = require("./routes/reviews");
+const user_routes = require("./routes/users");
 
 // This connects Mongoose to the MongoDB database called resto-find.
 // There is no need to await mongoose.connect() because Mongoose buffers the
 // function calls related to Mongoose models internally.
 mongoose.connect("mongodb://127.0.0.1:27017/resto-find");
 
-// Instead of using mongoose.connection, you can now use db.
+// Instead of using mongoose.connection, we can now use db.
 const db = mongoose.connection;
 
 // This is used to know whether the connection to MongoDB was successfully
@@ -87,6 +95,12 @@ app.use(session({
 // This is used to display flash messages, for eg., Successfully registered!,
 // etc., using sessions.
 app.use(flash());
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new local_strategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // app.use() is generally used for introducing middlewares, and can handle all
 // types of HTTP requests.
@@ -171,11 +185,13 @@ app.use((req, res, next) => {
 // file, we can define routes like router.get("/", ...) in a separate file
 // (restaurants.js), and attach a prefix of "/restaurants" to every route
 // defined in that file.
-app.use("/restaurants", restaurants);
+app.use("/restaurants", restaurant_routes);
 
 // Similarly, we can attach a prefix of "/restaurants/:id/reviews" to every
 // route defined in the reviews.js file.
-app.use("/restaurants/:id/reviews", reviews);
+app.use("/restaurants/:id/reviews", review_routes);
+
+app.use(user_routes);
 
 // app.all() calls the specified middleware function whenever there is any HTTP
 // request with the specified path. "*" is a wildcard path which matches every

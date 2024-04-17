@@ -6,11 +6,10 @@
     novalidate disables the client-side browser default validations for the
     form, and allows Bootstrap to take over.
 
-    The client-side validations only ensure that something is entered in every
-    field of the form.
-    Using client-side validations to ensure that, for eg., the price is a
-    positive number, is useless, as someone can still use, for eg., Postman, to
-    bypass the client-side validations.
+    Even though type="number" min="0" step="0.01" ensures that the entered price
+    is a valid positive price, someone can still use, for eg., Postman, to
+    bypass the client-side validations, in which case the server-side
+    validations will come into effect.
 -->
 
 <% layout("layouts/boilerplate") %>
@@ -52,8 +51,8 @@
 
                 <div class="input-group">
                     <span class="input-group-text" id="price-label">Rs.</span>
-                    <input class="form-control" type="text" id="price" name="restaurant[price]" placeholder="0.00"
-                        aria-label="price" aria-describedby="price-label" required>
+                    <input class="form-control" type="number" min="0" step="0.01" id="price" name="restaurant[price]"
+                        placeholder="0.00" aria-label="price" aria-describedby="price-label" required>
 
                     <!-- <div class="valid-feedback">
                         Looks good!
