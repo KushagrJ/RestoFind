@@ -55,9 +55,10 @@
  * if (!(req.session.user_id)) {
        // This code will be reached, for eg., when user_id is undefined (such
        // as when the user_id property doesn't exist on the req.session object
-       // because no successful login has been done in the current session), or
-       // when user_id is equal to null (such as when user_id is explicitly
-       // assigned null during logging out the user within the current session).
+       // because no successful login has been done with respect to the current
+       // session), or when user_id is equal to null (such as when user_id is
+       // explicitly assigned null during logging out the user with respect to
+       // the current session).
    }
  * Instead of implementing authentication from scratch (by using brycpt, by
    manually manipulating the req.session object, etc. (as shown above)), we have

@@ -6,6 +6,7 @@ const Restaurant = require("../models/restaurant");
 
 const ExpressError = require("../utils/express-error");
 const { RestaurantValidationSchema } = require("../utils/validation-schemas");
+const { is_logged_in } = require("../utils/middleware-functions");
 
 router.get("/", async (req, res, next) => {
     try {
@@ -20,7 +21,8 @@ router.get("/", async (req, res, next) => {
     }
 });
 
-router.get("/new", (req, res) => {
+// Multiple middleware functions can be chained one after another.
+router.get("/new", is_logged_in, (req, res) => {
     res.render("restaurants/new");
 });
 
@@ -39,8 +41,7 @@ const validate_restaurant = (req, res, next) => {
     }
 };
 
-// Multiple middleware functions can be chained one after another.
-router.post("/", validate_restaurant, async (req, res, next) => {
+router.post("/", is_logged_in, validate_restaurant, async (req, res, next) => {
     try {
         const restaurant = new Restaurant(req.body.restaurant);
         await restaurant.save();
@@ -85,7 +86,7 @@ router.get("/:id", async (req, res, next) => {
     }
 });
 
-router.get("/:id/edit", async (req, res, next) => {
+router.get("/:id/edit", is_logged_in, async (req, res, next) => {
     try {
         const restaurant = await Restaurant.findById(req.params.id);
 
@@ -100,18 +101,21 @@ router.get("/:id/edit", async (req, res, next) => {
     }
 });
 
-router.put("/:id", validate_restaurant, async (req, res, next) => {
-    try {
-        const restaurant = await
-            Restaurant.findByIdAndUpdate(req.params.id, req.body.restaurant);
-        req.flash("success", "Successfully updated the restaurant!");
-        res.redirect(`/restaurants/${restaurant._id}`);
-    } catch (err) {
-        next(err);
-    }
-});
+router.put("/:id", is_logged_in, validate_restaurant,
+    async (req, res, next) => {
+        try {
+            const restaurant = await
+                Restaurant.findByIdAndUpdate(req.params.id,
+                    req.body.restaurant);
 
-router.delete("/:id", async (req, res, next) => {
+            req.flash("success", "Successfully updated the restaurant!");
+            res.redirect(`/restaurants/${restaurant._id}`);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+router.delete("/:id", is_logged_in, async (req, res, next) => {
     try {
         await Restaurant.findByIdAndDelete(req.params.id);
         req.flash("success", "Successfully deleted the restaurant!");

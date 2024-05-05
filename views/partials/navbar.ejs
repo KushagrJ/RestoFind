@@ -13,6 +13,15 @@
                 <a class="nav-link" href="/restaurants">Restaurants</a>
                 <a class="nav-link" href="/restaurants/new">New Restaurant</a>
             </div>
+
+            <div class="navbar-nav ms-auto">
+                <% if (!current_user) { %>
+                <a class="nav-link" href="/register">Register</a>
+                <a class="nav-link" href="/login">Login</a>
+                <% } else { %>
+                <a class="nav-link" href="/logout">Logout</a>
+                <% } %>
+            </div>
         </div>
     </div>
 </nav>

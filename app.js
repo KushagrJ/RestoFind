@@ -102,8 +102,8 @@ passport.use(new local_strategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// app.use() is generally used for introducing middlewares, and can handle all
-// types of HTTP requests.
+// app.use() is generally used for introducing middleware functions, and can
+// handle all types of HTTP requests.
 // On the other hand, for eg., app.get() can only handle HTTP GET requests.
 
 // If no path is specified as the first argument of an app.use(), then the
@@ -139,17 +139,19 @@ passport.deserializeUser(User.deserializeUser());
 // the next() function (without any arguments) to execute the next middleware
 // function in line.
 // However, if an error argument is passed to next(), for eg., next(err), then
-// all remaining middleware functions in the chain are skipped except for those
-// that are correspondingly set up to handle that error.
+// all remaining middleware functions in the chain will get skipped except for
+// those which are correspondingly set up to handle that error.
 
-// To handle errors within asynchronous functions, we must pass them to the
-// next() function, where Express will catch and process them if no
-// corresponding middleware functions have been set up to handle those errors.
-// However, errors that occur within synchronous functions require no extra
-// work. Express will automatically catch and process them if no corresponding
-// middleware functions have been set up to handle those errors.
-// Express' built-in error handling middleware function is added at the end of
-// the middleware function stack.
+// To handle an error within an asynchronous function, we must catch and pass it
+// to the next() function, where the next middleware function in line which is
+// correspondingly set up to handle that error will get executed.
+// However, an error that occurs within a synchronous function requires no extra
+// work. Express will automatically catch and pass it to the next middleware
+// function in line which is correspondingly set up to handle that error.
+// In both cases, if no middleware function has been correspondingly set up to
+// handle an error, then Express' built-in error handling middleware function
+// will get executed, which is present at the end of the middleware function
+// stack.
 
 // app.get("/makerestaurant", async (req, res, next) => {
 //     try {
@@ -170,12 +172,21 @@ passport.deserializeUser(User.deserializeUser());
 // });
 
 app.use((req, res, next) => {
-    // This makes the success variable (which refers to the array containing
-    // the currently available success flash messages with respect to the
-    // current session) available in every ejs file.
+    // req.flash("success") returns an array containing the currently available
+    // success flash messages with respect to the current session.
+    // This makes that array available in every middleware function as the
+    // res.locals.success variable and in every ejs file as the success
+    // variable only for the current request-response cycle.
     res.locals.success = req.flash("success");
 
     res.locals.error = req.flash("error");
+
+    // Passport checks the req.session object and assigns the currently
+    // authenticated (logged in) user's details as an object to req.user with
+    // respect to the current session.
+    // req.user remains undefined if no user is currently logged in with respect
+    // to the current session.
+    res.locals.current_user = req.user;
 
     next();
 });
@@ -213,7 +224,7 @@ app.use((err, req, res, next) => {
 
     // This is different from above where the statusCode variable, and not the
     // err object's statusCode property, gets the default value, as here the err
-    // object's message property gets the default value, in case it's undefined.
+    // object's message property gets a value, in case it's undefined.
     if (!(err.message)) {
         err.message = "Oh No, Something Went Wrong!";
     }
