@@ -6,19 +6,8 @@ const router = express.Router({ mergeParams: true });
 
 const Restaurant = require("../models/restaurant");
 const Review = require("../models/review");
-const ExpressError = require("../utils/express-error");
-const { ReviewValidationSchema } = require("../utils/validation-schemas");
 
-const validate_review = (req, res, next) => {
-    const { error } = ReviewValidationSchema.validate(req.body);
-
-    if (error) {
-        const message = error.details.map(el => el.message).join(", ");
-        throw new ExpressError(400, message);
-    } else {
-        next();
-    }
-};
+const { validate_review } = require("../utils/middleware-functions");
 
 router.post("/", validate_review, async (req, res, next) => {
     try {

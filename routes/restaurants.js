@@ -4,9 +4,8 @@ const router = express.Router();
 // This imports the Mongoose model exported in the restaurant.js file.
 const Restaurant = require("../models/restaurant");
 
-const ExpressError = require("../utils/express-error");
-const { RestaurantValidationSchema } = require("../utils/validation-schemas");
-const { is_logged_in } = require("../utils/middleware-functions");
+const { validate_restaurant, is_existing_restaurant, is_logged_in, is_author } =
+    require("../utils/middleware-functions");
 
 router.get("/", async (req, res, next) => {
     try {
@@ -26,29 +25,16 @@ router.get("/new", is_logged_in, (req, res) => {
     res.render("restaurants/new");
 });
 
-const validate_restaurant = (req, res, next) => {
-    // If the validation is successful, then error will be undefined.
-    const { error } = RestaurantValidationSchema.validate(req.body);
-
-    if (error) {
-        // error.details is an array of objects with each object having a
-        // message property. This creates a single message by joining them.
-        const message = error.details.map(el => el.message).join(", ");
-
-        throw new ExpressError(400, message);
-    } else {
-        next();
-    }
-};
-
 router.post("/", is_logged_in, validate_restaurant, async (req, res, next) => {
     try {
         const restaurant = new Restaurant(req.body.restaurant);
+        restaurant.author = req.user._id;
         await restaurant.save();
 
         req.flash("success", "Successfully created a new restaurant!");
 
-        // This redirects to the specified path.
+        // This redirects to the specified path. The method may be either GET or
+        // POST, depending upon the situation.
         res.redirect(`/restaurants/${restaurant._id}`);
     } catch (err) {
         next(err);
@@ -56,53 +42,26 @@ router.post("/", is_logged_in, validate_restaurant, async (req, res, next) => {
 });
 
 // The order in which these routes have been defined matters.
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", is_existing_restaurant, async (req, res, next) => {
     try {
-        // The id in the path can be accessed using req.params.id.
         // populate("reviews") populates the reviews array in the returned
         // document (object) from the restaurants collection with the
         // corresponding data from the reviews collection.
-        const restaurant =
-            await Restaurant.findById(req.params.id).populate("reviews");
-
-        // If req.params.id is not a valid 12-byte hexadecimal string (since
-        // MongoDB ObjectId's are 12-byte hexadecimal strings), then the above
-        // findById() will throw an error and this code will not be reached.
-        if (!restaurant) {
-            // This code will be reached only when req.params.id is a valid
-            // 12-byte hexadecimal string and it doesn't correspond to any
-            // actual document, as in this case, Mongoose will not throw any
-            // error and will simply assign null to restaurant.
-            // When there are no matches, then, for eg., find() returns an empty
-            // array, whereas, for eg., findById (which internally calls
-            // findOne()) returns null.
-            req.flash("error", "Couldn't find that restaurant!");
-            res.redirect("/restaurants");
-        } else {
-            res.render("restaurants/show", { restaurant });
-        }
+        const restaurant = await Restaurant.findById(req.params.id).
+            populate("reviews").populate("author");
+        res.render("restaurants/show", { restaurant });
     } catch (err) {
         next(err);
     }
 });
 
-router.get("/:id/edit", is_logged_in, async (req, res, next) => {
-    try {
-        const restaurant = await Restaurant.findById(req.params.id);
+router.get("/:id/edit", is_logged_in, is_existing_restaurant, is_author,
+    (req, res, next) => {
+        res.render("restaurants/edit", { restaurant: res.locals.restaurant });
+    });
 
-        if (!restaurant) {
-            req.flash("error", "Couldn't find that restaurant!");
-            res.redirect("/restaurants");
-        } else {
-            res.render("restaurants/edit", { restaurant });
-        }
-    } catch (err) {
-        next(err);
-    }
-});
-
-router.put("/:id", is_logged_in, validate_restaurant,
-    async (req, res, next) => {
+router.put("/:id", is_logged_in, is_existing_restaurant, is_author,
+    validate_restaurant, async (req, res, next) => {
         try {
             const restaurant = await
                 Restaurant.findByIdAndUpdate(req.params.id,
@@ -115,14 +74,15 @@ router.put("/:id", is_logged_in, validate_restaurant,
         }
     });
 
-router.delete("/:id", is_logged_in, async (req, res, next) => {
-    try {
-        await Restaurant.findByIdAndDelete(req.params.id);
-        req.flash("success", "Successfully deleted the restaurant!");
-        res.redirect("/restaurants");
-    } catch (err) {
-        next(err);
-    }
-});
+router.delete("/:id", is_logged_in, is_existing_restaurant, is_author,
+    async (req, res, next) => {
+        try {
+            await Restaurant.findByIdAndDelete(req.params.id);
+            req.flash("success", "Successfully deleted the restaurant!");
+            res.redirect("/restaurants");
+        } catch (err) {
+            next(err);
+        }
+    });
 
 module.exports = router;

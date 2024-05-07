@@ -20,7 +20,12 @@ const RestaurantSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: "Review"
         }
-    ]
+    ],
+
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+    }
 });
 
 const Review = require("./review");

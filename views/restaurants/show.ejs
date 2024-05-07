@@ -17,9 +17,11 @@
 
             <ul class="list-group list-group-flush">
                 <li class="list-group-item text-muted"><%= restaurant.location %></li>
+                <li class="list-group-item">Added by <%= restaurant.author.username %></li>
                 <li class="list-group-item">Rs. <%= restaurant.price %> Per Person</li>
             </ul>
 
+            <% if ((current_user) && (restaurant.author.equals(current_user))) { %>
             <div class="card-body">
                 <a class="card-link btn btn-info" href="/restaurants/<%= restaurant._id %>/edit">Edit</a>
 
@@ -27,6 +29,7 @@
                     <button class="btn btn-danger">Delete</button>
                 </form>
             </div>
+            <% } %>
 
             <div class="card-footer text-muted">
                 2 days ago

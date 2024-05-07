@@ -34,7 +34,10 @@ const seed_db = async () => {
             image: "https://source.unsplash.com/collection/483251",
             price: Math.floor(Math.random() * 900) + 100,
             description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit fuga praesentium recusandae, provident ex aut libero quaerat.Maxime sint nulla amet nesciunt officiis earum, laudantium hic consectetur ducimus fugit dolores.",
-            location: `${cities[rand].city}, ${cities[rand].state}`
+            location: `${cities[rand].city}, ${cities[rand].state}`,
+
+            // This is the id of the user "kushagrj", found by using mongosh.
+            author: "6620362e9c1f3b028c5d36b3"
         });
 
         await restaurant.save();
