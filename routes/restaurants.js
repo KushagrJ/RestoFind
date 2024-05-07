@@ -4,7 +4,7 @@ const router = express.Router();
 // This imports the Mongoose model exported in the restaurant.js file.
 const Restaurant = require("../models/restaurant");
 
-const { validate_restaurant, is_existing_restaurant, is_logged_in, is_author } =
+const { is_logged_in, validate_restaurant, is_existing_restaurant, is_author } =
     require("../utils/middleware-functions");
 
 router.get("/", async (req, res, next) => {
@@ -47,9 +47,10 @@ router.get("/:id", is_existing_restaurant, async (req, res, next) => {
         // populate("reviews") populates the reviews array in the returned
         // document (object) from the restaurants collection with the
         // corresponding data from the reviews collection.
-        const restaurant = await Restaurant.findById(req.params.id).
-            populate("reviews").populate("author");
-        res.render("restaurants/show", { restaurant });
+        await res.locals.restaurant.populate("reviews");
+        await res.locals.restaurant.populate("author");
+
+        res.render("restaurants/show", { restaurant: res.locals.restaurant });
     } catch (err) {
         next(err);
     }
