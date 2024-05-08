@@ -47,7 +47,6 @@ router.get("/:id", is_existing_restaurant, async (req, res, next) => {
         // populate("author") populates the author in the document (object) from
         // the restaurants collection with the corresponding data from the users
         // collection.
-        // await res.locals.restaurant.populate("reviews");
         await res.locals.restaurant.populate("author");
 
         // This populates the reviews array in the document (object) from the
