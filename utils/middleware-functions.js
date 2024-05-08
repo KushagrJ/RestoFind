@@ -3,6 +3,7 @@ const { RestaurantValidationSchema, ReviewValidationSchema } =
 const ExpressError = require("../utils/express-error");
 
 const Restaurant = require("../models/restaurant");
+const Review = require("../models/review")
 
 module.exports.is_logged_in = (req, res, next) => {
     // req.isAuthenticated(), which is provided by Passport, checks the
@@ -27,7 +28,8 @@ module.exports.is_logged_in = (req, res, next) => {
 // req.session.return_to will no longer exist after a successful login attempt
 // has been made.
 // So, before logging in (i.e. before the session gets cleared), this middleware
-// function is executed to store the return_to url within res.locals.
+// function is executed to store the return_to url within res.locals, which will
+// persist only during the current request-response cycle.
 module.exports.store_return_to = (req, res, next) => {
     if (req.session.return_to) {
         res.locals.return_to = req.session.return_to;
@@ -45,17 +47,6 @@ module.exports.validate_restaurant = (req, res, next) => {
         // message property. This creates a single message by joining them.
         const message = error.details.map(el => el.message).join(", ");
 
-        throw new ExpressError(400, message);
-    } else {
-        next();
-    }
-};
-
-module.exports.validate_review = (req, res, next) => {
-    const { error } = ReviewValidationSchema.validate(req.body);
-
-    if (error) {
-        const message = error.details.map(el => el.message).join(", ");
         throw new ExpressError(400, message);
     } else {
         next();
@@ -89,9 +80,48 @@ module.exports.is_existing_restaurant = async (req, res, next) => {
     }
 }
 
-module.exports.is_author = (req, res, next) => {
+module.exports.is_restaurant_author = (req, res, next) => {
+    // We don't need the author of the restaurant populated, as we are comparing
+    // by user id, and not by username.
     if ((!req.user) || (!res.locals.restaurant) ||
         (!res.locals.restaurant.author.equals(req.user._id))) {
+        req.flash("error", "You do not have permission to do that!");
+        res.redirect(`/restaurants/${res.locals.restaurant._id}`)
+    } else {
+        next();
+    }
+}
+
+module.exports.validate_review = (req, res, next) => {
+    const { error } = ReviewValidationSchema.validate(req.body);
+
+    if (error) {
+        const message = error.details.map(el => el.message).join(", ");
+        throw new ExpressError(400, message);
+    } else {
+        next();
+    }
+};
+
+module.exports.is_existing_review = async (req, res, next) => {
+    try {
+        const review = await Review.findById(req.params.review_id);
+
+        if (!review) {
+            req.flash("error", "Couldn't find that review!");
+            res.redirect("/restaurants");
+        } else {
+            res.locals.review = review;
+            next();
+        }
+    } catch (err) {
+        next(err);
+    }
+}
+
+module.exports.is_review_author = (req, res, next) => {
+    if ((!req.user) || (!res.locals.review) ||
+        (!res.locals.review.author.equals(req.user._id))) {
         req.flash("error", "You do not have permission to do that!");
         res.redirect(`/restaurants/${res.locals.restaurant._id}`)
     } else {

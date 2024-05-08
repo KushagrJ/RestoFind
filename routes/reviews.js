@@ -7,44 +7,46 @@ const router = express.Router({ mergeParams: true });
 const Restaurant = require("../models/restaurant");
 const Review = require("../models/review");
 
-const { validate_review } = require("../utils/middleware-functions");
+const { is_logged_in, validate_review, is_existing_restaurant,
+    is_existing_review,
+    is_review_author } = require("../utils/middleware-functions");
 
-router.post("/", validate_review, async (req, res, next) => {
-    try {
-        const restaurant = await Restaurant.findById(req.params.id);
-        const review = new Review(req.body.review);
+router.post("/", is_logged_in, is_existing_restaurant, validate_review,
+    async (req, res, next) => {
+        try {
+            const review = new Review(req.body.review);
+            review.author = req.user._id;
 
-        // Even though it looks like the entire review gets pushed, only the
-        // object id of the review actually gets pushed, as the
-        // RestaurantSchema has been defined in this way.
-        restaurant.reviews.push(review);
+            // Even though it looks like the entire review gets pushed, only the
+            // object id of the review actually gets pushed, as the
+            // RestaurantSchema has been defined in this way.
+            res.locals.restaurant.reviews.push(review);
 
-        await restaurant.save();
-        await review.save();
+            await res.locals.restaurant.save();
+            await review.save();
 
-        req.flash("success", "Successfully created a new review!");
+            req.flash("success", "Successfully created a new review!");
+            res.redirect(`/restaurants/${req.params.id}`)
+        } catch (err) {
+            next(err);
+        }
+    });
 
-        res.redirect(`/restaurants/${restaurant._id}`)
-    } catch (err) {
-        next(err);
-    }
-});
+router.delete("/:review_id", is_logged_in, is_existing_restaurant,
+    is_existing_review, is_review_author, async (req, res, next) => {
+        try {
+            // This deletes all occurrences of review_id from the reviews array
+            // within the corresponding restaurants document.
+            await Restaurant.findByIdAndUpdate(req.params.id,
+                { $pull: { reviews: req.params.review_id } });
 
-router.delete("/:review_id", async (req, res, next) => {
-    try {
-        // This deletes all occurrences of review_id from the reviews array
-        // within the corresponding restaurants document.
-        await Restaurant.findByIdAndUpdate(req.params.id,
-            { $pull: { reviews: req.params.review_id } });
+            await Review.findByIdAndDelete(req.params.review_id);
 
-        await Review.findByIdAndDelete(req.params.review_id);
-
-        req.flash("success", "Successfully deleted the review!");
-
-        res.redirect(`/restaurants/${req.params.id}`);
-    } catch (err) {
-        next(err);
-    }
-});
+            req.flash("success", "Successfully deleted the review!");
+            res.redirect(`/restaurants/${req.params.id}`);
+        } catch (err) {
+            next(err);
+        }
+    });
 
 module.exports = router;
