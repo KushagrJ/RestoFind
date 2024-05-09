@@ -1,6 +1,6 @@
 const { RestaurantValidationSchema, ReviewValidationSchema } =
     require("../utils/validation-schemas");
-const ExpressError = require("../utils/express-error");
+const Express_Error = require("../utils/express-error");
 
 const Restaurant = require("../models/restaurant");
 const Review = require("../models/review")
@@ -47,7 +47,7 @@ module.exports.validate_restaurant = (req, res, next) => {
         // message property. This creates a single message by joining them.
         const message = error.details.map(el => el.message).join(", ");
 
-        throw new ExpressError(400, message);
+        throw new Express_Error(400, message);
     } else {
         next();
     }
@@ -97,7 +97,7 @@ module.exports.validate_review = (req, res, next) => {
 
     if (error) {
         const message = error.details.map(el => el.message).join(", ");
-        throw new ExpressError(400, message);
+        throw new Express_Error(400, message);
     } else {
         next();
     }

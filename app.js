@@ -20,7 +20,7 @@ const local_strategy = require("passport-local");
 
 const User = require("./models/user");
 
-const ExpressError = require("./utils/express-error");
+const Express_Error = require("./utils/express-error");
 
 // These allow the routes defined in the restaurants.js, reviews.js and the
 // users.js files to be used in this file.
@@ -212,7 +212,7 @@ app.use(user_routes);
 // matches any path that starts with the specified path, whereas app.all() only
 // matches exact paths.
 app.all("*", (req, res, next) => {
-    next(new ExpressError(404, "Page Not Found!"));
+    next(new Express_Error(404, "Page Not Found!"));
 });
 
 // Error-handling middleware functions have four arguments: err, req, res and
