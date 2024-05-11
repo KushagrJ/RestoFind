@@ -14,30 +14,18 @@
                 <label class="form-label" for="title">Title</label>
                 <input class="form-control" type="text" id="title" name="restaurant[title]"
                     value="<%= restaurant.title %>" required>
-
-                <!-- <div class="valid-feedback">
-                    Looks good!
-                </div> -->
             </div>
 
             <div class="mb-3">
                 <label class="form-label" for="location">Location</label>
                 <input class="form-control" type="text" id="location" name="restaurant[location]"
                     value="<%= restaurant.location %>" required>
-
-                <!-- <div class="valid-feedback">
-                    Looks good!
-                </div> -->
             </div>
 
             <div class="mb-3">
                 <label class="form-label" for="image">Image URL</label>
                 <input class="form-control" type="text" id="image" name="restaurant[image]"
                     value="<%= restaurant.image %>" required>
-
-                <!-- <div class="valid-feedback">
-                    Looks good!
-                </div> -->
             </div>
 
             <div class="mb-3">
@@ -47,10 +35,6 @@
                     <span class="input-group-text" id="price-label">Rs.</span>
                     <input class="form-control" type="number" min="0" step="0.01" id="price" name="restaurant[price]"
                         value="<%= restaurant.price %>" aria-label="price" aria-describedby="price-label" required>
-
-                    <!-- <div class="valid-feedback">
-                        Looks good!
-                    </div> -->
                 </div>
             </div>
 
@@ -58,10 +42,6 @@
                 <label class="form-label" for="description">Description</label>
                 <textarea class="form-control" type="text" id="description" name="restaurant[description]"
                     required><%= restaurant.description %></textarea>
-
-                <!-- <div class="valid-feedback">
-                    Looks good!
-                </div> -->
             </div>
 
             <div class="mb-3">

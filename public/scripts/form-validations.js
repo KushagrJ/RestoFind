@@ -1,4 +1,5 @@
 // Used by Bootstrap for client-side validations for the forms.
+// Copied from the Bootstrap docs.
 
 // Example starter JavaScript for disabling form submissions if there
 // are invalid fields.

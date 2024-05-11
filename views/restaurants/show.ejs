@@ -1,9 +1,10 @@
 <!--
-    ?_method=DELETE tells Express (via method-override) to treat this as a DELETE
-    request, instead of a POST request.
+    ?_method=DELETE tells Express (via method-override) to treat this as a
+    DELETE request, instead of a POST request.
 -->
 
 <% layout("layouts/boilerplate") %>
+<link rel="stylesheet" href="/style-sheets/star-ratings.css">
 
 <div class="row">
     <div class="col-6">
@@ -43,9 +44,23 @@
 
         <form class="mb-3 needs-validation" action="/restaurants/<%= restaurant._id %>/reviews" method="POST"
             novalidate>
-            <div class="mb-3">
-                <label class="form-label" for="rating">Rating</label>
-                <input class="form-range" type="range" min="1" max="5" name="review[rating]" id="rating">
+            <div class="mb-2">
+                <!--
+                    Used to display ratings as stars.
+                    Copied from starability-css.
+                -->
+                <fieldset class="starability-basic">
+                    <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                    <label for="first-rate1" title="Terrible">1 star</label>
+                    <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                    <label for="first-rate2" title="Not good">2 stars</label>
+                    <input type="radio" id="first-rate3" name="review[rating]" value="3" checked />
+                    <label for="first-rate3" title="Average">3 stars</label>
+                    <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                    <label for="first-rate4" title="Very good">4 stars</label>
+                    <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                    <label for="first-rate5" title="Amazing">5 stars</label>
+                </fieldset>
             </div>
 
             <div class="mb-3">
@@ -60,7 +75,18 @@
         <% for (let review of restaurant.reviews) { %>
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">Rating: <%= review.rating %></h5>
+                <!--
+                    Used to display ratings as stars.
+                    Copied from starability-css.
+                -->
+                <p class="starability-result" data-rating="<%= review.rating %>">
+                    <!--
+                        This text will not be displayed on the page, but will be
+                        helpful for, for eg., screen readers.
+                    -->
+                    Rating: <%= review.rating %>
+                </p>
+
                 <h6 class="card-subtitle mb-2 text-muted">by <%= review.author.username %></h6>
                 <p class="card-text"><%= review.body %></p>
 
