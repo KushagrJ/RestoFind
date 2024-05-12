@@ -37,11 +37,23 @@ router.get("/new", is_logged_in, (req, res) => {
     res.render("restaurants/new");
 });
 
-router.post("/", is_logged_in, validate_restaurant, upload.array("images"),
+router.post("/", is_logged_in, upload.array("images"), validate_restaurant,
     async (req, res, next) => {
         try {
             const restaurant = new Restaurant(req.body.restaurant);
             restaurant.author = req.user._id;
+
+            // req.files is an array of objects with each object having a path
+            // property and a filename property corresponding to the
+            // Cloudinary url and the Cloudinary file name, respectively, of the
+            // corresponding uploaded image.
+            // This creates a new array of objects with each object having only
+            // a url property and a file_name property.
+            // The parentheses after => are required because otherwise the
+            // contents between the braces will be treated as the function body.
+            restaurant.images =
+                req.files.map(f => ({ url: f.path, file_name: f.filename }));
+
             await restaurant.save();
 
             req.flash("success", "Successfully created a new restaurant!");

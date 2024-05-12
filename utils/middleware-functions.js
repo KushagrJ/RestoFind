@@ -44,7 +44,8 @@ module.exports.validate_restaurant = (req, res, next) => {
 
     if (error) {
         // error.details is an array of objects with each object having a
-        // message property. This creates a single message by joining them.
+        // message property.
+        // This creates a single message by joining them.
         const message = error.details.map(el => el.message).join(", ");
 
         throw new ExpressError(400, message);
