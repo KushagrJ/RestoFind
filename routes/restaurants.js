@@ -7,6 +7,18 @@ const Restaurant = require("../models/restaurant");
 const { is_logged_in, validate_restaurant, is_existing_restaurant,
     is_restaurant_author } = require("../utils/middleware-functions");
 
+// This is used to populate the req.body and the req.file/req.files objects
+// according to the incoming HTTP POST/PUT/etc. request's data when the
+// corresponding enctype is multipart/form-data, which is mainly used for
+// uploading files.
+// To access req.body and req.file/req.files within a middleware function for a
+// route, use upload.single(), upload.array(), etc.
+const multer = require("multer");
+
+// This is used to upload images to Cloudinary using multer.
+const { storage } = require("../utils/multer-and-cloudinary");
+const upload = multer({ storage });
+
 router.get("/", async (req, res, next) => {
     try {
         const restaurants = await Restaurant.find({});
@@ -25,21 +37,22 @@ router.get("/new", is_logged_in, (req, res) => {
     res.render("restaurants/new");
 });
 
-router.post("/", is_logged_in, validate_restaurant, async (req, res, next) => {
-    try {
-        const restaurant = new Restaurant(req.body.restaurant);
-        restaurant.author = req.user._id;
-        await restaurant.save();
+router.post("/", is_logged_in, validate_restaurant, upload.array("images"),
+    async (req, res, next) => {
+        try {
+            const restaurant = new Restaurant(req.body.restaurant);
+            restaurant.author = req.user._id;
+            await restaurant.save();
 
-        req.flash("success", "Successfully created a new restaurant!");
+            req.flash("success", "Successfully created a new restaurant!");
 
-        // This redirects to the specified path. The method may be either GET or
-        // POST, depending upon the situation.
-        res.redirect(`/restaurants/${restaurant._id}`);
-    } catch (err) {
-        next(err);
-    }
-});
+            // This redirects to the specified path. The method may be either
+            // GET or POST, depending upon the situation.
+            res.redirect(`/restaurants/${restaurant._id}`);
+        } catch (err) {
+            next(err);
+        }
+    });
 
 // The order in which these routes have been defined matters.
 router.get("/:id", is_existing_restaurant, async (req, res, next) => {

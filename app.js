@@ -5,22 +5,28 @@
 const express = require("express");
 const app = express();
 
+// This adds the properties defined in the .env file to the process.env object
+// if the current mode is not production, i.e. if the value of the NODE_ENV
+// environment variable has not been set to "production".
+// In production mode, environment variables are added directly to the
+// environment, and not via a .env file.
+if (process.env.NODE_ENV !== "production") {
+    require("dotenv").config();
+}
+
+const mongoose = require("mongoose");
+
 // The path module provides utilities for working with file and directory paths.
 const path = require("path");
 
-const mongoose = require("mongoose");
-const method_override = require("method-override");
 const ejs_mate = require("ejs-mate");
-
+const method_override = require("method-override");
 const session = require("express-session");
 const flash = require("connect-flash");
-
 const passport = require("passport");
 const local_strategy = require("passport-local");
-
 const User = require("./models/user");
-
-const Express_Error = require("./utils/express-error");
+const ExpressError = require("./utils/express-error");
 
 // These allow the routes defined in the restaurants.js, reviews.js and the
 // users.js files to be used in this file.
@@ -57,14 +63,14 @@ app.set("views", path.join(__dirname, "views"));
 // can be used simultaneously.
 app.engine("ejs", ejs_mate);
 
-// express.urlencoded() returns a built-in middleware function which populates
-// the req.body object according to the incoming HTTP POST/PUT/etc. request's
-// data.
+// This is used to populate the req.body object according to the incoming HTTP
+// POST/PUT/etc. request's data when the corresponding enctype is
+// application/x-www-form-urlencoded (the default value).
 app.use(express.urlencoded({ extended: true }));
 
-// method_override() returns a middleware function which lets you use HTTP verbs
-// such as PUT or DELETE in places where the client doesn't support it.
-// For eg., you can only send a GET request or a POST request via an HTML form.
+// This lets you use HTTP verbs such as PUT or DELETE in places where the client
+// doesn't support it. For eg., you can only send a GET request or a POST
+// request via an HTML form.
 app.use(method_override("_method"));
 
 // This allows static assets (images, JavaScript files, etc.) within the public
@@ -212,7 +218,7 @@ app.use(user_routes);
 // matches any path that starts with the specified path, whereas app.all() only
 // matches exact paths.
 app.all("*", (req, res, next) => {
-    next(new Express_Error(404, "Page Not Found!"));
+    next(new ExpressError(404, "Page Not Found!"));
 });
 
 // Error-handling middleware functions have four arguments: err, req, res and

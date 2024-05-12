@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const passport = require("passport");
-
 const User = require("../models/user");
+
 const { store_return_to } = require("../utils/middleware-functions");
 
 router.get("/register", (req, res) => {

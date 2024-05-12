@@ -5,16 +5,33 @@ const Schema = mongoose.Schema;
 
 // This creates a Mongoose schema.
 const RestaurantSchema = new Schema({
-    title: String,
+    // Even though the syntax is slightly confusing, title will be a String
+    // value, and not an object.
+    title: {
+        type: String
+    },
+
+    // String is shorthand for { type: String }.
     location: String,
-    image: String,
+
+    // images will be an array of objects with each object storing the
+    // Cloudinary url and the Cloudinary file name of an image.
+    images: [
+        {
+            url: String,
+            file_name: String
+        }
+    ],
+
     price: Number,
+
     description: String,
 
-    // reviews will be an array of object id's referring to documents from the
-    // reviews MongoDB collection.
-    // This is one way to implement a one-to-many relationship between MongoDB
-    // collections.
+    // reviews will be an array of ObjectId values referring to documents from
+    // the reviews MongoDB collection, and will later become an array of objects
+    // when populated for the corresponding restaurant document.
+    // This is one way of implementing a one(restaurant)-to-many(reviews)
+    // relationship between MongoDB collections.
     reviews: [
         {
             type: Schema.Types.ObjectId,
@@ -22,6 +39,11 @@ const RestaurantSchema = new Schema({
         }
     ],
 
+    // Similarly, author will be an ObjectId value referring to a document from
+    // the users MongoDB collection, and will later become an object when
+    // populated for the corresponding restaurant document.
+    // This is another way of implementing a one(author)-to-many(restaurants)
+    // relationship between MongoDB collections.
     author: {
         type: Schema.Types.ObjectId,
         ref: "User"
