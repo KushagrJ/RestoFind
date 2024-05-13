@@ -18,7 +18,7 @@
     <h1 class="text-center mb-3">New Restaurant</h1>
 
     <div class="col-6 offset-3">
-        <form class="needs-validation" action="/restaurants" method="POST" enctype="multipart/form-data">
+        <form class="needs-validation" action="/restaurants" method="POST" enctype="multipart/form-data" novalidate>
             <div class="mb-3">
                 <label class="form-label" for="title">Title</label>
                 <input class="form-control" type="text" id="title" name="restaurant[title]" required>
@@ -29,7 +29,10 @@
                 <input class="form-control" type="text" id="location" name="restaurant[location]" required>
             </div>
 
-            <input type="file" name="images" multiple>
+            <div class="mb-3">
+                <label for="form-file-multiple" class="form-label">Images</label>
+                <input class="form-control" type="file" id="form-file-multiple" name="images" multiple>
+            </div>
 
             <div class="mb-3">
                 <label class="form-label" for="price">Average Price (Per Person)</label>
@@ -51,7 +54,5 @@
                 <button class="btn btn-success">Add Restaurant</button>
             </div>
         </form>
-
-        <a href="/restaurants">All Restaurants</a>
     </div>
 </div>

@@ -37,6 +37,8 @@ router.get("/new", is_logged_in, (req, res) => {
     res.render("restaurants/new");
 });
 
+// Currently, there are no restrictions on the quantity, sizes, resolutions,
+// etc. of the images which are to be uploaded to Cloudinary.
 router.post("/", is_logged_in, upload.array("images"), validate_restaurant,
     async (req, res, next) => {
         try {

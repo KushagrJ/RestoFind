@@ -1,12 +1,6 @@
 // This file is used to clear the resto-find database and to seed it with sample
 // restaurants in the beginning.
 
-// source.unsplash.com can be used to get free, but not necessarily unique,
-// images.
-// Here, the images don't get stored in the database, and only the url does,
-// which means that new images will get displayed every time the pages are
-// loaded.
-
 const mongoose = require("mongoose");
 const Restaurant = require("../models/restaurant");
 const cities = require("./cities");
@@ -31,13 +25,24 @@ const seed_db = async () => {
 
         const restaurant = new Restaurant({
             title: `${rand_element(prefixes)} ${rand_element(suffixes)}`,
-            image: "https://source.unsplash.com/collection/483251",
+            location: `${cities[rand].city}, ${cities[rand].state}`,
             price: Math.floor(Math.random() * 900) + 100,
             description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit fuga praesentium recusandae, provident ex aut libero quaerat.Maxime sint nulla amet nesciunt officiis earum, laudantium hic consectetur ducimus fugit dolores.",
-            location: `${cities[rand].city}, ${cities[rand].state}`,
 
             // This is the id of the user "kushagrj", found by using mongosh.
-            author: "6620362e9c1f3b028c5d36b3"
+            author: "6620362e9c1f3b028c5d36b3",
+
+            // These are images which have already been uploaded to Cloudinary.
+            images: [
+                {
+                    url: 'https://res.cloudinary.com/dyhzti25i/image/upload/v1715628238/RestoFind/wedknifopioh7wgziizk.jpg',
+                    file_name: 'RestoFind/wedknifopioh7wgziizk'
+                },
+                {
+                    url: 'https://res.cloudinary.com/dyhzti25i/image/upload/v1715628242/RestoFind/uraxzjldirylppsdsy14.jpg',
+                    file_name: 'RestoFind/uraxzjldirylppsdsy14'
+                }
+            ]
         });
 
         await restaurant.save();

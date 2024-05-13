@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 // Instead of using mongoose.Schema, we can now use Schema.
 const Schema = mongoose.Schema;
 
+const { cloudinary } = require("../utils/multer-and-cloudinary");
+
 // This creates a Mongoose schema.
 const RestaurantSchema = new Schema({
     // Even though the syntax is slightly confusing, title will be a String
@@ -70,6 +72,11 @@ RestaurantSchema.post("findOneAndDelete", async function (restaurant) {
         // reviews array within the corresponding restaurants document (which
         // has already been deleted by now).
         await Review.deleteMany({ _id: { $in: restaurant.reviews } });
+
+        for (let image of restaurant.images) {
+            await cloudinary.uploader.destroy(image.file_name,
+                { invalidate: true });
+        }
     }
 });
 
