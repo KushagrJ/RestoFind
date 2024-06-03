@@ -79,7 +79,7 @@ module.exports.is_existing_restaurant = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
-}
+};
 
 module.exports.is_restaurant_author = (req, res, next) => {
     // We don't need the author of the restaurant populated, as we are comparing
@@ -91,7 +91,7 @@ module.exports.is_restaurant_author = (req, res, next) => {
     } else {
         next();
     }
-}
+};
 
 module.exports.validate_review = (req, res, next) => {
     const { error } = ReviewValidationSchema.validate(req.body);
@@ -118,7 +118,7 @@ module.exports.is_existing_review = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
-}
+};
 
 module.exports.is_review_author = (req, res, next) => {
     if ((!req.user) || (!res.locals.review) ||
@@ -128,4 +128,4 @@ module.exports.is_review_author = (req, res, next) => {
     } else {
         next();
     }
-}
+};
