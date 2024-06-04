@@ -93,9 +93,24 @@ must also be removed in the backend.
 
 
 
+
+
+For those candidates which aren't deleted, simply copy the image urls and image
+names from the old version to the new version.
+
+
+
+
+
+
 Add client-side logic to ensure, on both the New Page and the Edit Page, that at
 least 2 candidates have been added, and if anyone_can_vote is false, then at
 least 1 voter has been added.
+
+Also, on the edit page, if a candidate has been marked to be deleted, then its
+title must no longer be required.
+Add an event listener to add_poll_button which will dynamically add/remove the
+required attribute to/from every corresponding candidate's title.
 
 
 
