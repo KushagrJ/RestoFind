@@ -109,7 +109,6 @@ The votes by those voters which are deleted must also be deleted in the backend.
 Also, the votes for those candidates which are deleted must also be deleted in
 the backend.
 
-
 NOTE - FOR THOSE CANDIDATES WHICH AREN'T DELETED, CONSIDER THEM TO BE THE SAME
 CANDIDATE IN THE BACKEND, EVEN IF TITLE, DESCRIPTION AND IMAGES CHANGE.
 THUS, THE IMAGES MUST PERSIST (IF NEW IMAGES ARE NOT UPLOADED), AND THEIR VOTES
@@ -123,11 +122,11 @@ AND DELETE ALL VOTES BY VOTERS NOT BELONGING TO THE ARRAY.
 SIMPLY PUT, FOR VOTERS, AFTER EDITING, SIMPLY DELETE THE OLD VOTERS AND ADD THE
 CURRENT VOTERS. EDITING VOTERS IS NOT AS COMPLICATED AS EDITING CANDIDATES.
 
+For those candidates which aren't deleted, simply copy the data.
 
-For those candidates which aren't deleted, simply copy the image urls and image
-names from the old version to the new version.
-Similarly for Object Id's.
-
+SIMPLE WAY TO UPDATE CANDIDATES -
+LOOP OVER THE EXISTING CANDIDATES IN REVERSE ORDER, AND UPDATE/DELETE THE
+CANDIDATES. THIS WAY, YOU WON'T HAVE TO MANUALLY ASSIGN _ID.
 
 Add client-side logic to ensure, on both the New Page and the Edit Page, that at
 least 2 candidates have been added, and if anyone_can_vote is false, then at
@@ -144,11 +143,9 @@ required attribute to/from every corresponding candidate's title.
 
 
 
-
-
 Show Page
 
-Show a list of eligible voters to the organiser.
+Show a list of eligible voters only to the organiser.
 Show a button to conclude the poll.
 
 
@@ -168,8 +165,10 @@ Types of viewers of show page -
 [To non-organiser, non-eligible voters, only the details of the poll should be
  visible]
 
+If ongoing poll results should not be visible, then Results and Votes must not
+be visible, irrespective of anonymous votes.
 
-
+Show Votes as collapsible drawers.
 
 
 
