@@ -100,7 +100,7 @@ IMPORTANT POINTS -
 07. ON BOTH THE NEW PAGE AND THE EDIT PAGE, IT MUST BE ENSURED THAT AT LEAST 2
     CANDIDATES ARE ADDED, AND IF ANYONE_CAN_VOTE IS FALSE, THEN AT LEAST 1 VOTER
     IS ADDED.
-    ALSO, IT MUST BE ENSURED THAT DUPLICATE VOTERS AREN'T ADDED.
+    ALSO, IT MUST BE ENSURED THAT EMPTY/DUPLICATE VOTERS AREN'T ADDED.
 
 
 
@@ -110,22 +110,31 @@ IMPORTANT POINTS -
 
 Show Page
 
-Show a list of eligible voters only to the organiser.
-Show a button to conclude the poll.
+Show a button to conclude the poll (only to the organiser).
 
 
 Poll Details                           Cast Vote
+(1, 2, 3, 4)                           (1, 3) (Select/Radio - Determined by a)
 
 Eligible Voters                        Votes
+(1, 2)                                 (1, 2, 3 - Determined by c and d)
 
 Results
+(1, 2, 3 - Determined by c and d)
 
 
 Types of viewers of show page -
-1. Organiser, Eligible Voter
-2. Organiser, Non-Eligible Voter
-3. Non-Organiser, Eligible Voter
-4. Non-Organiser, Non-Eligible Voter
+1. Organiser, Eligible Voter (determined by b)
+2. Organiser, Non-Eligible Voter (determined by b)
+3. Non-Organiser, Eligible Voter (determined by e and voters)
+4. Non-Organiser, Non-Eligible Voter (determined by e and voters)
+
+Conditions -
+a. multiple_votes_allowed
+b. organiser_can_vote
+c. ongoing_poll_results_visible
+d. anonymous_votes
+e. anyone_can_vote
 
 [To non-organiser, non-eligible voters, only the details of the poll should be
  visible]
@@ -133,7 +142,7 @@ Types of viewers of show page -
 If ongoing poll results should not be visible, then Results and Votes must not
 be visible, irrespective of anonymous votes.
 
-Show Votes as collapsible drawers.
+Show Eligible Voters and Votes as collapsible panels.
 
 
 
