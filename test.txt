@@ -146,6 +146,7 @@ Votes
 INSTEAD OF GIVING THE OPTION TO DELETE VOTES IN THE 'VOTES' SECTION, SIMPLY
 CREATE A NEW CARD CONSISTING OF PAST VOTES AND GIVE AN OPTION TO DELETE OVER
 THERE.
+CONCLUDED POLLS SHOULD NOT HAVE THE DELETE VOTE BUTTONS.
 
 
 Types of viewers of show page -
@@ -167,8 +168,6 @@ be visible, irrespective of anonymous votes.
 Show a card saying that the results will be available after the poll ends.
 
 Show Eligible Voters and Votes as collapsible panels.
-
-Add client-side validation to ensure that empty votes aren't submitted.
 
 
 
