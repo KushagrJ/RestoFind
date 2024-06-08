@@ -132,7 +132,7 @@ Done
 Candidates
 (1, 2, 3)
 
-Ongoing
+Done
 Cast Vote
 (1, 3) (Select/Radio - Determined by a)
 
@@ -165,7 +165,7 @@ e. anyone_can_vote
 
 If ongoing poll results should not be visible, then Results and Votes must not
 be visible, irrespective of anonymous votes.
-Show a card saying that the results will be available after the poll ends.
+Show a card saying that the results will be available after the poll concludes.
 
 Show Eligible Voters and Votes as collapsible panels.
 
