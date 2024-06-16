@@ -78,7 +78,7 @@
 IMPORTANT POINTS -
 01. NO VALIDATIONS HAVE BEEN IMPLEMENTED TO ENSURE THAT REQUESTS VIA, FOR EG.,
     POSTMAN ARE VALID.
-02, CONCURRENCY HASN'T BEEN CONSIDERED, AND THE APP HAS BEEN BUILT ASSUMING THAT
+02. CONCURRENCY HASN'T BEEN CONSIDERED, AND THE APP HAS BEEN BUILT ASSUMING THAT
     ONLY ONE PERSON WILL BE USING IT AT ANY GIVEN TIME.
 03. HERE, VOTE IS ITS OWN MODEL, WHEREAS CANDIDATE ISN'T (AND IS DIRECTLY
     EMBEDDED INSIDE POLL).
@@ -118,13 +118,6 @@ IMPORTANT POINTS -
 Show Page
 
 
-Poll Details              Candidates                   Past Votes
-
-Eligible Voters           Cast Vote                    Results
-
-                                                       All Votes
-
-
 Done
 Poll Details
 (1, 2, 3, 4)
@@ -145,6 +138,7 @@ Done
 Past Votes
 (1, 3)
 
+Done
 Results
 (1, 2, 3 - Determined by c)
 
@@ -152,7 +146,7 @@ All Votes
 (1, 2, 3 - Determined by c and d)
 
 
-THOROUGH TESTING TO BE DONE AFTER COMPLETING THE SHOW PAGE.
+THOROUGH TESTING TO BE DONE AFTER COMPLETING THE PROJECT.
 
 
 Types of viewers of show page -
@@ -168,15 +162,6 @@ b. organiser_can_vote
 c. ongoing_poll_results_visible
 d. anonymous_votes
 e. anyone_can_vote
-
-If ongoing poll results should not be visible, then Results and All Votes must
-not be visible, irrespective of anonymous votes.
-Show a card saying that the results will be available after the poll has been
-concluded.
-
-When anonymous_votes is true, then don't show the 'All Votes' section.
-
-Show Eligible Voters and All Votes as collapsible panels.
 
 
 
