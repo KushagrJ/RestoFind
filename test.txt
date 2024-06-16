@@ -105,6 +105,9 @@ IMPORTANT POINTS -
     AUTOMATICALLY GET DELETED.
     SIMILARLY, AFTER AN EDIT, IF ORGANISER_CAN_VOTE IS CHANGED TO FALSE, THEN
     THE ORGANISER'S VOTES (IF ANY) AUTOMATICALLY GET DELETED.
+09. ALSO, IT MUST BE ENSURED THAT EMPTY VOTES AREN'T SUBMITTED.
+10. AFTER A POLL HAS BEEN CONCLUDED, IT CANNOT BE EDITED AND THE CORRESPONDING
+    VOTES CANNOT BE DELETED.
 
 
 
@@ -115,9 +118,11 @@ IMPORTANT POINTS -
 Show Page
 
 
-Poll Details              Candidates                   Results
+Poll Details              Candidates                   Past Votes
 
-Eligible Voters           Cast Vote                    Votes
+Eligible Voters           Cast Vote                    Results
+
+                                                       All Votes
 
 
 Done
@@ -136,20 +141,18 @@ Done
 Cast Vote
 (1, 3) (Select/Radio - Determined by a)
 
+Done
+Past Votes
+(1, 3)
+
 Results
 (1, 2, 3 - Determined by c)
 
-Votes
+All Votes
 (1, 2, 3 - Determined by c and d)
 
 
 THOROUGH TESTING TO BE DONE AFTER COMPLETING THE SHOW PAGE.
-
-
-INSTEAD OF GIVING THE OPTION TO DELETE VOTES IN THE 'VOTES' SECTION, SIMPLY
-CREATE A NEW CARD CONSISTING OF PAST VOTES AND GIVE AN OPTION TO DELETE OVER
-THERE.
-CONCLUDED POLLS SHOULD NOT HAVE THE DELETE VOTE BUTTONS.
 
 
 Types of viewers of show page -
@@ -166,14 +169,14 @@ c. ongoing_poll_results_visible
 d. anonymous_votes
 e. anyone_can_vote
 
-If ongoing poll results should not be visible, then Results and Votes must not
-be visible, irrespective of anonymous votes.
+If ongoing poll results should not be visible, then Results and All Votes must
+not be visible, irrespective of anonymous votes.
 Show a card saying that the results will be available after the poll has been
 concluded.
 
-When anonymous_votes is true, then don't show the 'Votes' section.
+When anonymous_votes is true, then don't show the 'All Votes' section.
 
-Show Eligible Voters and Votes as collapsible panels.
+Show Eligible Voters and All Votes as collapsible panels.
 
 
 
@@ -186,15 +189,3 @@ Index Page
 Two columns -
 1. Ongoing
 2. Concluded
-
-
-
-
-
-
-
-Not Required -
-Also, on the edit page, if a candidate has been marked to be deleted, then its
-title must no longer be required.
-Add an event listener to add_poll_button which will dynamically remove the
-required attribute from every corresponding candidate's title.
